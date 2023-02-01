@@ -2,6 +2,21 @@
   text-align: center;
 }
 
+td {
+  border: 1px solid rgb(147 51 234);
+}
+
+th{
+  background-color: #6600a6;
+  font-weight:800;
+}
+
+th,
+table {
+  border-width: 4px;
+  border-color: rgb(147 51 234);
+}
+
 .App-logo {
   height: 20vmin;
   pointer-events: none;

@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import './App.css';
-import logo from './logo.svg';
 import { ConnectionProvider, useWallet, WalletProvider } from '@solana/wallet-adapter-react';
 import { clusterApiUrl } from "@solana/web3.js";
 import {
@@ -15,23 +14,23 @@ import {
     WalletMultiButton
 } from "@solana/wallet-adapter-react-ui";
 
+
+import EmployeeForm from './components/EmployeeForm';
+
+
 require('@solana/wallet-adapter-react-ui/styles.css');
 
 const Content = () => {
     const wallet = useWallet()
-    return <header className="App-header">
-        <WalletMultiButton/>
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>Hi {wallet?.publicKey?.toBase58()}!</p>
-        <a
-            className="App-link"
-            href="https://docs.solana.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-        >
-            Learn Solana
-        </a>
-    </header>
+
+    return (
+        <header className="App-header">
+            <div className='absolute top-0 right-0 m-4'>
+                <WalletMultiButton />
+            </div>
+           {wallet?.publicKey?<EmployeeForm wallet={wallet}/>:null} 
+        </header>
+    )
 }
 
 function App() {
