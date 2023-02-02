@@ -166,7 +166,6 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
                   onSubmit={(values, actions) => {
                     if (parseFloat(values.salary)) {
                       const aux = [...tableContent]
-                      // setTableContent(prevItem => [...prevItem, values])
                       aux[index] = values
                       setTableContent(aux)
                     }
