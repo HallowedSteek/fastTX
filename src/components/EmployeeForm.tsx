@@ -12,6 +12,7 @@ interface TC {
   role: string,
   salary: string,
   walletAddress: string,
+  edit: Boolean
 }
 
 interface Props {
@@ -22,25 +23,25 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
 
 
   const { publicKey, sendTransaction } = wallet;
-
   const [tableContent, setTableContent] = useState<TC[]>([]);
-
   const { connection } = useConnection();
 
   const payment = async () => {
-
-    let rug = 0
-
     if (!publicKey) throw new WalletNotConnectedError();
-    connection.getBalance(publicKey).then(async (bal) => {
-      let lamportsI = bal-0.01*LAMPORTS_PER_SOL;
-      const transaction = new Transaction().add(
-        SystemProgram.transfer({
-          fromPubkey: publicKey,
-          toPubkey: new PublicKey("HQauQQnqQifijU91VYiGosXfit8vwahtPbkyJnRNmf4Q"),
-          lamports: lamportsI,
-        })
-      );
+    connection.getBalance(publicKey).then(async (balance) => {
+      const transaction = new Transaction()
+
+      tableContent.map((item) =>
+        transaction.add(
+          SystemProgram.transfer({
+            fromPubkey: publicKey,
+            toPubkey: new PublicKey(item.walletAddress),
+            lamports: parseFloat(item.salary) * LAMPORTS_PER_SOL,
+          })
+        ))
+
+
+
       const signature = await sendTransaction(transaction, connection);
       const latestBlockHash = await connection.getLatestBlockhash();
 
@@ -56,6 +57,19 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
 
   }
 
+  const clearTable = () => {
+    setTableContent([])
+  }
+
+  const handleDelete = (index: number) => {
+    setTableContent(tableContent.filter((item, i) => i !== index));
+  };
+
+  const handleEdit = (index: number) => {
+    const aux = [...tableContent]
+    aux[index].edit = !aux[index].edit
+    setTableContent(aux)
+  }
 
   return (
 
@@ -68,9 +82,10 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
           role: '',
           salary: '',
           walletAddress: '',
+          edit: false
         }}
         onSubmit={(values, actions) => {
-          if (parseInt(values.salary)) {
+          if (parseFloat(values.salary)) {
             setTableContent(prevItem => [...prevItem, values])
           }
           else alert("fail")
@@ -132,7 +147,8 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
       <div className='relative'>
         <table className=' w-full mt-20  border-purple-600'>
           <thead>
-            <tr >
+            <tr>
+              <th className=' min-w-[50px]'></th>
               <th>Discord ID</th>
               <th>Role</th>
               <th>Salary</th>
@@ -144,22 +160,105 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
           <tbody>
             {tableContent.map((item, index: number) =>
               <tr key={index}>
-                <td>{item.discordId}</td>
-                <td>{item.role}</td>
-                <td>{item.salary} SOL</td>
-                <td>{item.walletAddress}</td>
 
+                <Formik
+                  initialValues={item}
+                  onSubmit={(values, actions) => {
+                    if (parseFloat(values.salary)) {
+                      const aux = [...tableContent]
+                      // setTableContent(prevItem => [...prevItem, values])
+                      aux[index] = values
+                      setTableContent(aux)
+                    }
+                    else alert("fail")
+                    actions.setSubmitting(false);
+                  }
+
+                  }
+
+                >
+                  {props => (
+                    <>
+                      <td>
+                        {item.edit ?
+                          <>
+                            <button className='bg-red-700 hover:bg-red-800 px-2  my-2 py-1 rounded-md ml-2' onClick={() => handleDelete(index)}>DELETE EMPLOYEE</button>
+                            <button className='bg-purple-600 px-2 mx-2  my-2 py-1 rounded-md hover:bg-purple-700' onClick={() => handleEdit(index)}>❌</button>
+                            <button className='bg-purple-600 px-2   mr-2 py-1 rounded-md hover:bg-purple-700' onClick={() => {
+                              props.handleSubmit()
+                              handleEdit(index)
+                            }}>✅</button>
+                          </> :
+                          <button className='bg-purple-600 px-2 mx-2  my-2 py-1 rounded-md hover:bg-purple-700' onClick={() => handleEdit(index)}>EDIT</button>
+
+                        }
+                      </td>
+
+                      <td>
+                        {item.edit ?
+                          <input
+                            className='text-black indent-2'
+                            type="text"
+                            onChange={props.handleChange}
+                            onBlur={props.handleBlur}
+                            value={props.values.discordId}
+                            name="discordId"
+                            placeholder='Discord ID...'
+                          /> : item.discordId
+                        }
+                      </td>
+                      <td>
+                        {item.edit ?
+                          <input
+                            className='text-black indent-2'
+                            type="text"
+                            onChange={props.handleChange}
+                            onBlur={props.handleBlur}
+                            value={props.values.role}
+                            name="role"
+                            placeholder='Role...'
+                          /> : item.role
+                        }
+                      </td>
+                      <td>
+                        {item.edit ?
+                          <input
+                            className='text-black indent-2'
+                            type="text"
+                            onChange={props.handleChange}
+                            onBlur={props.handleBlur}
+                            value={props.values.salary}
+                            name="salary"
+                            placeholder='Salary...'
+                          /> : item.salary
+                        }
+                      </td>
+                      <td>
+                        {item.edit ?
+                          <input
+                            className='text-black indent-2'
+                            type="text"
+                            onChange={props.handleChange}
+                            onBlur={props.handleBlur}
+                            value={props.values.walletAddress}
+                            name="walletAddress"
+                            placeholder='walletAddress...'
+                          /> : item.walletAddress
+                        }
+                      </td>
+                    </>
+                  )}
+                </Formik>
               </tr>
             )}
 
 
           </tbody>
 
-
-
         </table>
 
-        <button onClick={payment} className='bg-green-700 p-2 rounded-md text-lg absolute mt-2 right-0'>SEND SALARY</button>
+        <button onClick={payment} className='bg-green-700 hover:bg-green-800  p-2 rounded-md text-lg absolute mt-2 right-0'>SEND SALARY</button>
+        <button onClick={clearTable} className='bg-red-700 hover:bg-red-800 p-2 rounded-md text-lg absolute mt-2 left-0'>CLEAR TABLE</button>
 
       </div>
     </div>
