@@ -1,3 +1,15 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+.shd{
+  box-shadow: -5px 5px 10px 0px black;
+}
+
+
+
+.tableShd{
+  box-shadow: 0px 5px 20px 0px black;
+}
+
 .App {
   text-align: center;
 }
@@ -31,7 +43,11 @@ table {
 }
 
 .App-header {
-  background-color: #282c34;
+  background-color: #4875d0;
+  background-image: url('./utils/bg.png');
+  font-family: 'Poppins', sans-serif;
+  background-repeat: no-repeat;
+  background-size: cover;
   min-height: 100vh;
   display: flex;
   flex-direction: column;

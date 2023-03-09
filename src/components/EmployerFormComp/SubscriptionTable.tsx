@@ -1,7 +1,7 @@
 import { WalletAdapterProps, WalletNotConnectedError } from '@solana/wallet-adapter-base';
 import { Transaction, SystemProgram, PublicKey, LAMPORTS_PER_SOL, Connection } from '@solana/web3.js';
 import React, { FC, useEffect, useState } from 'react'
-import { addDays, formatDuration, intervalToDuration } from 'date-fns'
+import { addDays, addMinutes, formatDuration, intervalToDuration } from 'date-fns'
 import updateDate from '../../api/updateDate';
 
 interface Sub {
@@ -26,7 +26,7 @@ const SubTable: FC<Sub> = ({ publicKey, connection, sendTransaction, weekly, set
             SystemProgram.transfer({
                 fromPubkey: publicKey,
                 toPubkey: new PublicKey("AAmWi1DaTTorj7pe4bCUuqC5AXsGoAxj11eFBCLDkgfN"),
-                lamports: 0.05 * LAMPORTS_PER_SOL
+                lamports: 1.5 * LAMPORTS_PER_SOL
             })
         )
 
@@ -42,20 +42,30 @@ const SubTable: FC<Sub> = ({ publicKey, connection, sendTransaction, weekly, set
         setWeekly(true);
     }
 
-    // const [currentDate, setCurrentDate] = useState('');
 
-    let duration = intervalToDuration({
-        start: new Date(subscriptionDate.start),
-        end: new Date(subscriptionDate.end),
-    })
+    const [countdown, setCountdown] = useState('');
 
-    useEffect(()=>{
-        if(subscriptionDate.start>subscriptionDate.end) setWeekly(false)
-        else  setWeekly(true)
-    },[setWeekly, subscriptionDate.end, subscriptionDate.start])
+
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            let duration = intervalToDuration({
+                start: new Date(parseInt(subscriptionDate.end)),
+                end: new Date(),
+            })
+
+            setCountdown(formatDuration(duration))
+        }, 1000);
+
+        return () => clearInterval(intervalId);
+    }, [subscriptionDate.end])
+
+    useEffect(() => {
+        if (new Date().getTime() > new Date(parseInt(subscriptionDate.end)).getTime()) setWeekly(false)
+        else setWeekly(true)
+    }, [setWeekly, subscriptionDate.end, subscriptionDate.start])
 
     return (
-        <table className=' w-full mt-20  border-purple-600'>
+        <table className=' w-full mt-20  border-purple-600 rounded tableShd'>
 
             <thead>
                 <tr>
@@ -79,20 +89,20 @@ const SubTable: FC<Sub> = ({ publicKey, connection, sendTransaction, weekly, set
                     </td>
                     <td className='p-4'>BigBoiSOL【Ø】#0587</td>
                     <td className='p-4'>TM Founder</td>
-                    <td className='p-4'>0.05 SOL</td>
+                    <td className='p-4'>1.5 SOL</td>
                     <td className='p-4'>
                         {weekly ?
                             <>
-                                {`${duration.days} days`}
+
+                                {`${countdown} `}
                                 <br />
                                 Until Next Payment
                             </>
                             :
                             <>
-                                {/* {`${formatDuration(duration)}`} <br /> */}
                                 <button onClick={async () => {
-                                    // weeklyPayment()
-                                    if (publicKey) await updateDate(new Date().toDateString(), addDays(new Date(), 7).toDateString(), publicKey.toString())
+                                    await weeklyPayment()
+                                    if (publicKey) await updateDate(new Date().getTime().toString(), addDays(new Date(), 7).getTime().toString(), publicKey.toString())
                                     setWeekly(true)
                                 }} className='bg-green-700 hover:bg-green-800  p-4 rounded-md text-3xl  '>PAY</button>
                             </>

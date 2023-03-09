@@ -25,10 +25,14 @@ const Content = () => {
 
     return (
         <header className="App-header">
-            <div className='absolute top-0 right-0 m-4'>
-                <WalletMultiButton />
+
+            <div className='w-screen h-screen  flex flex-col justify-center  backdrop-blur-[80px]'>
+                <div className='absolute top-0 right-0 m-4'>
+                    <WalletMultiButton />
+                </div>
+              
+                {wallet?.publicKey ? <EmployeeForm wallet={wallet} /> : null}
             </div>
-           {wallet?.publicKey?<EmployeeForm wallet={wallet}/>:null} 
         </header>
     )
 }
