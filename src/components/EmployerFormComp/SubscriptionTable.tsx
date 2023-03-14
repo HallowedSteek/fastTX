@@ -65,7 +65,7 @@ const SubTable: FC<Sub> = ({ publicKey, connection, sendTransaction, weekly, set
     }, [setWeekly, subscriptionDate.end, subscriptionDate.start])
 
     return (
-        <table className=' w-full mt-20  border-purple-600 rounded tableShd'>
+        <table className=' w-full mt-20 mb-20 border-purple-600 rounded tableShd'>
 
             <thead>
                 <tr>
