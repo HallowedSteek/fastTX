@@ -289,3 +289,7 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
 }
 export default EmployeeForm;
 
+function resolveToWalletAddress(arg0: { text: any; }) {
+  throw new Error('Function not implemented.');
+}
+

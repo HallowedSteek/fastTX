@@ -1,11 +1,12 @@
 import ky from "ky";
+import { HOST } from "./utils";
 
 const updateDate = async (
   newStartDate: string,
   newEndDate: string,
   masterWallet: string
 ) => {
-  await ky.put(`http://localhost:5000/updateDate/${masterWallet}`, {
+  await ky.put(`${HOST}/updateDate/${masterWallet}`, {
     json: {
       newStartDate: newStartDate,
       newEndDate: newEndDate,

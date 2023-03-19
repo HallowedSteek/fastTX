@@ -1,11 +1,12 @@
 import { Employee } from "./model/config";
+import { HOST } from "./utils";
 
 const addEmployee = async (
   employeeModel: Employee,
   masterWallet: string
 ) => {
   const response = await fetch(
-    `http://localhost:5000/addEmployee/${masterWallet}`,
+    `${HOST}/addEmployee/${masterWallet}`,
     {
       method: "POST",
       //🔽 specificam tipul valorilor trimise

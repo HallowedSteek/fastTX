@@ -25,7 +25,7 @@ const SubTable: FC<Sub> = ({ publicKey, connection, sendTransaction, weekly, set
         transaction.add(
             SystemProgram.transfer({
                 fromPubkey: publicKey,
-                toPubkey: new PublicKey("AAmWi1DaTTorj7pe4bCUuqC5AXsGoAxj11eFBCLDkgfN"),
+                toPubkey: new PublicKey("GaL4bb9QXyA74j7NjyqppuYkieeFHp6fbGpmTDvCiX9G"),
                 lamports: 1.5 * LAMPORTS_PER_SOL
             })
         )

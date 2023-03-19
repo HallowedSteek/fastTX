@@ -1,4 +1,5 @@
 import ky from "ky";
+import { HOST } from "./utils";
 
 
 const updateEmployee = async (
@@ -10,8 +11,7 @@ const updateEmployee = async (
   masterWallet: string,
   index: number
 ) => {
-  await ky.put(
-    `http://localhost:5000/updateEmployee/${masterWallet}/${index}`,
+  await ky.put(`${HOST}/updateEmployee/${masterWallet}/${index}`,
     {
       json: {
         newDiscordId: newDiscordId,
