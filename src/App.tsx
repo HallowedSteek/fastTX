@@ -17,6 +17,7 @@ import {
 
 import EmployeeForm from './components/EmployeeForm';
 
+import { Analytics } from '@vercel/analytics/react';
 
 require('@solana/wallet-adapter-react-ui/styles.css');
 
@@ -56,6 +57,7 @@ function App() {
                 <WalletProvider wallets={wallets} autoConnect>
                     <WalletModalProvider>
                         <Content />
+                        <Analytics/>
                     </WalletModalProvider>
                 </WalletProvider>
             </ConnectionProvider>
