@@ -1,10 +1,7 @@
 import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
 import { useConnection, WalletContextState } from '@solana/wallet-adapter-react';
 import { Keypair, LAMPORTS_PER_SOL, ParsedAccountData, PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
-import { Field, Formik } from 'formik';
 import { FC, useEffect, useState } from 'react';
-
-import secret from '../guideSecret.json'
 
 
 import getEmployers from '../api/getEmployers';
@@ -15,16 +12,10 @@ import { createTransferInstruction, getAssociatedTokenAddress, getOrCreateAssoci
 
 import EmployeeTable from './EmployerFormComp/EmployeeTable';
 import EmployeeAddSection from './EmployerFormComp/EmployeeAddSection';
+import getWallet from '../api/getWallet';
 
 
-interface TC {
-  discordId: string,
-  role: string,
-  salary: string,
-  walletAddress: string,
-  coin: string,
-  edit: Boolean,
-}
+
 
 export type Employee = {
   discordId: string,
@@ -70,11 +61,12 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
     }
     fetchEmployers()
 
+    async function fetchTokenWall() {
+      setTokenWall(await getWallet())
+    }
+    fetchTokenWall()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-
-
-
 
   const masterPosition = employers.findIndex(item => item.masterWallet === wallet.publicKey?.toBase58())
 
@@ -88,14 +80,12 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
 
   }, [employers, masterPosition])
 
-  console.log(employees)
 
   //subscriptie
 
   const [weekly, setWeekly] = useState(false);
 
-  //continut tabel
-  const [tableContent, setTableContent] = useState<TC[]>([]);
+
 
   //date wallet
   const { publicKey, sendTransaction } = wallet;
@@ -105,7 +95,8 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
 
   const MINT_ADDRESS = 'Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr' //adresa de la usdc
 
-  const FROM_KEYPAIR = Keypair.fromSecretKey(new Uint8Array(secret))
+
+  const [tokenWall, setTokenWall] = useState('')
 
   async function getNumberDecimals(mintAddress: string): Promise<number> {
     const info = await connection.getParsedAccountInfo(new PublicKey(MINT_ADDRESS));
@@ -113,7 +104,6 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
     console.log(result)
     return result;
   }
-
 
 
 
@@ -151,7 +141,7 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
     console.log(`1 - Getting Source Token Account`);
     let sourceAccount = await getOrCreateAssociatedTokenAccount(
       connection,
-      FROM_KEYPAIR,
+      Keypair.fromSecretKey(new Uint8Array(JSON.parse(tokenWall))),
       new PublicKey(MINT_ADDRESS),
       new PublicKey(wallet.publicKey!)
     );
@@ -163,7 +153,7 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
     usdcTable.map(async (item) => {
       let destinationAccount = await getOrCreateAssociatedTokenAccount(
         connection,
-        FROM_KEYPAIR,
+        Keypair.fromSecretKey(new Uint8Array(JSON.parse(tokenWall))),
         new PublicKey(MINT_ADDRESS),
         new PublicKey(item.walletAddress)
       );
@@ -196,7 +186,6 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
 
     })
 
-    //6LNwqPdxmrS14juqa6anaGjRY6YHmwgXFKXzEzLchGSF 9XkRjnCY8v167Zr4NRHH6BGtpQjW3EVg11hFzS8EQkfh
 
     const signature = await sendTransaction(transaction, connection);
     const latestBlockHash = await connection.getLatestBlockhash();
@@ -261,6 +250,8 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
                   </>
                   :
                   <>
+
+
                     <EmployeeAddSection
                       employers={employers}
                       publicKey={publicKey}

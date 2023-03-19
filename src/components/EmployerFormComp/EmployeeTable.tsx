@@ -1,3 +1,4 @@
+
 import { PublicKey } from "@solana/web3.js";
 import { Field, Formik } from "formik";
 import { FC } from "react";
@@ -5,6 +6,7 @@ import deleteEmployee from "../../api/deleteEmployee";
 import getEmployers from "../../api/getEmployers";
 import updateEmployee from "../../api/updateEmployee";
 import { EA, Employee } from "../EmployeeForm";
+
 
 
 
@@ -22,24 +24,25 @@ type ImportEmployees = {
 
 const EmployeeTable: FC<ImportEmployees> = ({ employees, employers, publicKey, masterPosition, setEmployers, setEmployees, handleEdit }) => {
 
+    
+
     const input = 'text-black indent-2 rounded-xl shd'
+    const editInput = `${input} max-w-[150px] mx-4 `
 
     return (
-        <>
-            <table className=' w-full mt-20  border-purple-600 tableShd'>
-                <thead>
-                    <tr>
-
-                        <>
-                            <th className=' min-w-[50px]'></th>
-                            <th>Discord ID</th>
+        <div className="respTable w-full mt-20  max-w-md lg:max-w-full overflow-auto max-h-[500px]  ">
+            <table className='w-full self-center tableShd relative'>
+                <thead className="sticky top-0" >
+                    <tr className=" h-[70px]">
+                        
+                            <th className='min-w-[50px]'></th>
+                            <th >Discord ID</th>
                             <th>Role</th>
                             <th>Salary</th>
                             <th>Wallet Address</th>
-                        </>
+                        
 
                     </tr>
-
                 </thead>
 
                 <tbody>
@@ -72,8 +75,8 @@ const EmployeeTable: FC<ImportEmployees> = ({ employees, employers, publicKey, m
                                     <>
                                         <td>
                                             {item.edit ?
-                                                <>
-                                                    <button type='button' className='bg-red-700 hover:bg-red-800 px-2  my-2 py-1 rounded-md ml-2' onClick={async () => {
+                                                <div className="flex flex-col">
+                                                    <button type='button' className='bg-red-700 hover:bg-red-800 px-2  my-2 py-1 rounded-md ml-2 text-sm' onClick={async () => {
                                                         try {
                                                             if (publicKey) await deleteEmployee(publicKey.toString(), index)
                                                             setEmployers(await getEmployers())
@@ -82,12 +85,14 @@ const EmployeeTable: FC<ImportEmployees> = ({ employees, employers, publicKey, m
                                                             console.log(error)
                                                         }
                                                     }}>DELETE EMPLOYEE</button>
-                                                    <button type='button' className='bg-purple-600 px-2 mx-2  my-2 py-1 rounded-md hover:bg-purple-700' onClick={() => handleEdit(index)}>❌</button>
+                                                    <div>
+                                                    <button type='button' className='bg-purple-600 px-2 mx-2  my-2 py-1 rounded-md hover:bg-purple-700' onClick={() => handleEdit(index)}>🔄</button>
                                                     <button type="button" className='bg-purple-600 px-2   mr-2 py-1 rounded-md hover:bg-purple-700' onClick={() => {
                                                         props.handleSubmit();
                                                         handleEdit(index);
                                                     }}>✅</button>
-                                                </> :
+                                                    </div>
+                                                </div> :
                                                 <button className='bg-purple-600 px-2 mx-2  my-2 py-1 rounded-md hover:bg-purple-700' onClick={() => handleEdit(index)}>EDIT</button>
 
                                             }
@@ -96,7 +101,7 @@ const EmployeeTable: FC<ImportEmployees> = ({ employees, employers, publicKey, m
                                         <td>
                                             {item.edit ?
                                                 <input
-                                                    className={input}
+                                                    className={editInput}
                                                     type="text"
                                                     onChange={props.handleChange}
                                                     onBlur={props.handleBlur}
@@ -109,7 +114,7 @@ const EmployeeTable: FC<ImportEmployees> = ({ employees, employers, publicKey, m
                                         <td>
                                             {item.edit ?
                                                 <input
-                                                    className={input}
+                                                    className={editInput}
                                                     type="text"
                                                     onChange={props.handleChange}
                                                     onBlur={props.handleBlur}
@@ -123,7 +128,7 @@ const EmployeeTable: FC<ImportEmployees> = ({ employees, employers, publicKey, m
                                             {item.edit ?
                                                 <div className='flex flex-row'>
                                                     <input
-                                                        className={input}
+                                                        className={`${editInput} salary`}
                                                         type="text"
                                                         onChange={props.handleChange}
                                                         onBlur={props.handleBlur}
@@ -131,7 +136,7 @@ const EmployeeTable: FC<ImportEmployees> = ({ employees, employers, publicKey, m
                                                         name="salary"
                                                         placeholder='Salary...'
                                                     />
-                                                    <Field onChange={props.handleChange} className={'text-black'} name="solUsdc" as="select">
+                                                    <Field onChange={props.handleChange} className={`${editInput} coin`} name="solUsdc" as="select">
                                                         <option value="SOL">SOL</option>
                                                         <option value="USDC">USDC</option>
                                                     </Field>
@@ -143,7 +148,7 @@ const EmployeeTable: FC<ImportEmployees> = ({ employees, employers, publicKey, m
                                         <td>
                                             {item.edit ?
                                                 <input
-                                                    className={input}
+                                                    className={`${editInput} overflow-y-scroll wadd`}
                                                     type="text"
                                                     onChange={props.handleChange}
                                                     onBlur={props.handleBlur}
@@ -163,7 +168,7 @@ const EmployeeTable: FC<ImportEmployees> = ({ employees, employers, publicKey, m
 
             </table>
 
-        </>
+        </div>
     )
 }
 

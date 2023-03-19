@@ -1,7 +1,7 @@
 import { WalletAdapterProps, WalletNotConnectedError } from '@solana/wallet-adapter-base';
 import { Transaction, SystemProgram, PublicKey, LAMPORTS_PER_SOL, Connection } from '@solana/web3.js';
 import React, { FC, useEffect, useState } from 'react'
-import { addDays, addMinutes, formatDuration, intervalToDuration } from 'date-fns'
+import { addDays,formatDuration, intervalToDuration } from 'date-fns'
 import updateDate from '../../api/updateDate';
 
 interface Sub {

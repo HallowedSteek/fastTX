@@ -13,11 +13,11 @@ type Props = {
     setEmployees: (value: React.SetStateAction<Employee[]>) => void;
 }
 
-const EmployeeAddSection:FC<Props> = ({publicKey,setEmployers,setEmployees,employers,masterPosition}) => {
+const EmployeeAddSection: FC<Props> = ({ publicKey, setEmployers, setEmployees, employers, masterPosition }) => {
 
-    const input = 'text-black indent-2 rounded-xl shd'
-    
-    return(
+    const input = 'text-black indent-2 max-w-[300px] rounded-xl shd mr-12'
+
+    return (
         <Formik
             initialValues={{
                 discordId: '',
@@ -50,10 +50,10 @@ const EmployeeAddSection:FC<Props> = ({publicKey,setEmployers,setEmployees,emplo
 
         >
             {props => (
-                <form className='form w-full flex flex-col' onSubmit={props.handleSubmit}>
-                    <div className='flex justify-around gap-8'>
+                <form className='form w-full mt-52 lg:mt-12 flex flex-col' onSubmit={props.handleSubmit}>
+                    <div className=' flex lg:flex-row flex-col justify-center items-center gap-2 lg:gap-0'>
                         <input
-                            className={input}
+                            className={`${input} max-w-[250px]`}
                             type="text"
                             onChange={props.handleChange}
                             onBlur={props.handleBlur}
@@ -62,7 +62,7 @@ const EmployeeAddSection:FC<Props> = ({publicKey,setEmployers,setEmployees,emplo
                             placeholder='Discord ID...'
                         />
                         <input
-                            className={input}
+                            className={`${input} max-w-[250px]`}
                             type="text"
                             onChange={props.handleChange}
                             onBlur={props.handleBlur}
@@ -70,23 +70,27 @@ const EmployeeAddSection:FC<Props> = ({publicKey,setEmployers,setEmployees,emplo
                             name="role"
                             placeholder='Role...'
                         />
-                        <input
-                            className={input}
-                            type="text"
-                            onChange={props.handleChange}
-                            onBlur={props.handleBlur}
-                            value={props.values.salary}
-                            name="salary"
-                            placeholder={`Salary...`}
-                        />
+                        <div className='flex mx-auto'>
+                            <input
+                                className={`text-black indent-2 rounded-xl border-l-0  shd  max-w-[90px] md:ml-auto salary`}
+                                type="text"
+                                onChange={props.handleChange}
+                                onBlur={props.handleBlur}
+                                value={props.values.salary}
+                                name="salary"
+                                placeholder={`Salary...`}
+                            />
 
-                        <Field onChange={props.handleChange} className={input} name="solUsdc" as="select">
-                            <option value="SOL">SOL</option>
-                            <option value="USDC">USDC</option>
-                        </Field>
+                            <Field onChange={props.handleChange} className={`${input} coin `} name="solUsdc" as="select">
+                                <option value="SOL">SOL</option>
+                                <option value="USDC">USDC</option>
+                            </Field>
+                        </div>
+
 
                         <input
-                            className={input}
+
+                            className={`${input} lg:mr-0`}
                             type="text"
                             onChange={props.handleChange}
                             onBlur={props.handleBlur}
@@ -95,9 +99,9 @@ const EmployeeAddSection:FC<Props> = ({publicKey,setEmployers,setEmployees,emplo
                             placeholder='Wallet Address...'
                         />
                     </div>
+                    <button className=' bg-purple-600 hover:bg-purple-700 p-2 mt-4 mr-8 lg:mr-0 text-xl rounded w-auto self-center lg:self-end shd' type="submit">ADD EMPLOYEE</button>
 
 
-                    <button className=' bg-purple-600 hover:bg-purple-700 p-2 mt-4 text-xl rounded w-auto self-end shd' type="submit">ADD EMPLOYEE</button>
                 </form>
             )}
         </Formik>

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import './App.css';
 import { ConnectionProvider, useWallet, WalletProvider } from '@solana/wallet-adapter-react';
 import { clusterApiUrl } from "@solana/web3.js";
@@ -30,8 +30,7 @@ const Content = () => {
                 <div className='absolute top-0 right-0 m-4'>
                     <WalletMultiButton />
                 </div>
-              
-                {wallet?.publicKey ? <EmployeeForm wallet={wallet} /> : null}
+                {wallet?.publicKey ? <EmployeeForm wallet={wallet} /> : "Please connect your wallet!"}
             </div>
         </header>
     )
