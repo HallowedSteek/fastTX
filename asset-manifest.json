@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/fastTX/static/css/main.a1e184ae.css",
+    "main.js": "/fastTX/static/js/main.0bd31ab2.js",
+    "static/js/631.6d0055c8.chunk.js": "/fastTX/static/js/631.6d0055c8.chunk.js",
+    "static/js/997.938f2307.chunk.js": "/fastTX/static/js/997.938f2307.chunk.js",
+    "static/js/882.2653493c.chunk.js": "/fastTX/static/js/882.2653493c.chunk.js",
+    "static/js/32.e00b46e6.chunk.js": "/fastTX/static/js/32.e00b46e6.chunk.js",
+    "static/js/114.ee122e37.chunk.js": "/fastTX/static/js/114.ee122e37.chunk.js",
+    "index.html": "/fastTX/index.html",
+    "main.a1e184ae.css.map": "/fastTX/static/css/main.a1e184ae.css.map",
+    "main.0bd31ab2.js.map": "/fastTX/static/js/main.0bd31ab2.js.map",
+    "631.6d0055c8.chunk.js.map": "/fastTX/static/js/631.6d0055c8.chunk.js.map",
+    "882.2653493c.chunk.js.map": "/fastTX/static/js/882.2653493c.chunk.js.map",
+    "32.e00b46e6.chunk.js.map": "/fastTX/static/js/32.e00b46e6.chunk.js.map",
+    "114.ee122e37.chunk.js.map": "/fastTX/static/js/114.ee122e37.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.a1e184ae.css",
+    "static/js/main.0bd31ab2.js"
+  ]
+}
