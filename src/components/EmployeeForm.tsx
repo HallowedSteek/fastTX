@@ -1,6 +1,6 @@
 import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
 import { useConnection, WalletContextState } from '@solana/wallet-adapter-react';
-import { Keypair, LAMPORTS_PER_SOL, ParsedAccountData, PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
+import { Connection, Keypair, LAMPORTS_PER_SOL, ParsedAccountData, PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
 import { FC, useEffect, useState } from 'react';
 
 
@@ -89,11 +89,19 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
 
   //date wallet
   const { publicKey, sendTransaction } = wallet;
-  const { connection } = useConnection();
+  // const { connection } = useConnection();
+
+  const connection = new Connection(
+    "https://few-solemn-county.solana-mainnet.discover.quiknode.pro/f8fa35bce484452cebe7789519c50638382bb03a/",
+    'confirmed',
+  );
+
+
+  console.log(connection)
 
   //tranzactii usdc
 
-  const MINT_ADDRESS = 'Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr' //adresa de la usdc
+  const MINT_ADDRESS = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v' //adresa de la usdc
 
 
   const [tokenWall, setTokenWall] = useState('')
@@ -288,8 +296,4 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
   );
 }
 export default EmployeeForm;
-
-function resolveToWalletAddress(arg0: { text: any; }) {
-  throw new Error('Function not implemented.');
-}
 
