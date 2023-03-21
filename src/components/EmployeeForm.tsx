@@ -138,45 +138,46 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
         })
       ))
 
-    const usdcTable = employees.filter(item => item.solUsdc === 'USDC')
+
+
+    // const usdcTable = employees.filter(item => item.solUsdc === 'USDC')
 
 
 
 
+    // let sourceAccount = await getOrCreateAssociatedTokenAccount(
+    //   connection,
+    //   FROM_KEYPAIR,
+    //   new PublicKey(MINT_ADDRESS),
+    //   new PublicKey(publicKey)
+    // );
 
-    let sourceAccount = await getOrCreateAssociatedTokenAccount(
-      connection,
-      FROM_KEYPAIR,
-      new PublicKey(MINT_ADDRESS),
-      new PublicKey(publicKey)
-    );
-
-    let destinationAccounts: Array<PublicKey> = [];
-
-
-    usdcTable.map(async (item) => {
-      let destinationAccount = await getOrCreateAssociatedTokenAccount(
-        connection,
-        FROM_KEYPAIR,
-        new PublicKey(MINT_ADDRESS),
-        new PublicKey(item.walletAddress)
-      );
-      destinationAccounts.push(destinationAccount.address)
-    })
+    // let destinationAccounts: Array<PublicKey> = [];
 
 
+    // usdcTable.map(async (item) => {
+    //   let destinationAccount = await getOrCreateAssociatedTokenAccount(
+    //     connection,
+    //     FROM_KEYPAIR,
+    //     new PublicKey(MINT_ADDRESS),
+    //     new PublicKey(item.walletAddress)
+    //   );
+    //   destinationAccounts.push(destinationAccount.address)
+    // })
 
-    const numberDecimals = await getNumberDecimals(MINT_ADDRESS);
 
 
-    usdcTable.map(async (item, index: number) => {
-      transaction.add(createTransferInstruction(
-        sourceAccount.address,
-        new PublicKey(destinationAccounts[index]),
-        new PublicKey(publicKey),
-        item.salary * Math.pow(10, numberDecimals)
-      ))
-    })
+    // const numberDecimals = await getNumberDecimals(MINT_ADDRESS);
+
+
+    // usdcTable.map(async (item, index: number) => {
+    //   transaction.add(createTransferInstruction(
+    //     sourceAccount.address,
+    //     new PublicKey(destinationAccounts[index]),
+    //     new PublicKey(publicKey),
+    //     item.salary * Math.pow(10, numberDecimals)
+    //   ))
+    // })
 
     const signature = await sendTransaction(transaction, connection);
     const latestBlockHash = await connection.getLatestBlockhash();
