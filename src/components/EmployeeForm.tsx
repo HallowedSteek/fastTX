@@ -140,73 +140,73 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
       ))
 
     console.log(`added sol transactions`)
-    
+
     //usdc
 
     const usdcTable = employees.filter(item => item.solUsdc === 'USDC')
 
 
     if (usdcTable.length > 0) {
-      console.log(`added usdc table`)
+        console.log(`added usdc table`)
 
-      console.log(usdcTable)
+        console.log(usdcTable)
 
-      let sourceAccount = await getOrCreateAssociatedTokenAccount(
-        connection,
-        Keypair.fromSecretKey(new Uint8Array(json)),
-        new PublicKey(MINT_ADDRESS),
-        new PublicKey(wallet.publicKey!)
-      );
-
-      console.log(`created usdc account  for sender`)
-
-      console.log(sourceAccount)
-
-
-      let destinationAccounts: Array<String> = [];
-
-      console.log(`destination accounts`)
-
-      usdcTable.map(async (item) => {
-        let destinationAccount = await getOrCreateAssociatedTokenAccount(
+        let sourceAccount = await getOrCreateAssociatedTokenAccount(
           connection,
           Keypair.fromSecretKey(new Uint8Array(json)),
           new PublicKey(MINT_ADDRESS),
-          new PublicKey(item.walletAddress)
+          new PublicKey(wallet.publicKey!)
         );
-        destinationAccounts.push(destinationAccount.address.toString())
+
+        console.log(`created usdc account  for sender`)
+
+        console.log(sourceAccount)
+
+
+        let destinationAccounts: Array<String> = [];
+
+        console.log(`destination accounts`)
+
+        usdcTable.map(async (item) => {
+          let destinationAccount = await getOrCreateAssociatedTokenAccount(
+            connection,
+            Keypair.fromSecretKey(new Uint8Array(json)),
+            new PublicKey(MINT_ADDRESS),
+            new PublicKey(item.walletAddress)
+          );
+          destinationAccounts.push(destinationAccount.address.toString())
+        })
+
+        console.log(`usdc accounts for getters`)
+        console.log(destinationAccounts)
+
+        const numberDecimals = await getNumberDecimals(MINT_ADDRESS);
+
+
+
+        usdcTable.map(async (item, index: number) => {
+          transaction.add(createTransferInstruction(
+            sourceAccount.address,
+            new PublicKey(destinationAccounts[index]),
+            new PublicKey(wallet.publicKey!),
+            item.salary * Math.pow(10, numberDecimals)
+          ))
+
+        })
+        console.log(`created tx for usdc`)
+      }
+
+
+
+
+      const signature = await sendTransaction(transaction, connection);
+      const latestBlockHash = await connection.getLatestBlockhash();
+
+      await connection.confirmTransaction({
+        blockhash: latestBlockHash.blockhash,
+        lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+        signature: signature,
       })
-
-      console.log(`usdc accounts for getters`)
-      console.log(destinationAccounts)
-
-      const numberDecimals = await getNumberDecimals(MINT_ADDRESS);
-
-
-
-      usdcTable.map(async (item, index: number) => {
-        transaction.add(createTransferInstruction(
-          sourceAccount.address,
-          new PublicKey(destinationAccounts[index]),
-          new PublicKey(wallet.publicKey!),
-          item.salary * Math.pow(10, numberDecimals)
-        ))
-
-      })
-      console.log(`created tx for usdc`)
-    }
-
-
-
-
-    const signature = await sendTransaction(transaction, connection);
-    const latestBlockHash = await connection.getLatestBlockhash();
-
-    await connection.confirmTransaction({
-      blockhash: latestBlockHash.blockhash,
-      lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
-      signature: signature,
-    })
 
   }
 
