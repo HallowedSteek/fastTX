@@ -196,17 +196,23 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
         console.log(`created tx for usdc`)
       }
 
+        try {
+          
+          const signature = await sendTransaction(transaction, connection);
+          const latestBlockHash = await connection.getLatestBlockhash();
+          await connection.confirmTransaction({
+            blockhash: latestBlockHash.blockhash,
+            lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+            signature: signature,
+          })
+    
+
+        } catch (error) {
+            console.log(error)          
+        }
 
 
-
-      const signature = await sendTransaction(transaction, connection);
-      const latestBlockHash = await connection.getLatestBlockhash();
-
-      await connection.confirmTransaction({
-        blockhash: latestBlockHash.blockhash,
-        lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
-        signature: signature,
-      })
+      
 
   }
 
