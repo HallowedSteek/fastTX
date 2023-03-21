@@ -228,6 +228,7 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
         new PublicKey(MINT_ADDRESS),
         new PublicKey(item.walletAddress)
       );
+      console.log(item.walletAddress)
       destinationAccounts.push(destinationAccount.address.toString())
     })
 
