@@ -112,7 +112,7 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
     return result;
   }
 
-
+ const FROM_KEYPAIR = Keypair.fromSecretKey(new Uint8Array(json));
 
   //tranzactii sol
 
@@ -146,7 +146,7 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
 
     const usdcTable = employees.filter(item => item.solUsdc === 'USDC')
 
-    const FROM_KEYPAIR = Keypair.fromSecretKey(new Uint8Array(json));
+   
 
    
       // console.log(`added usdc table`)
