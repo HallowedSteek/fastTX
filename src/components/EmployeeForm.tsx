@@ -1,6 +1,6 @@
 import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
 import { WalletContextState } from '@solana/wallet-adapter-react';
-import { Connection, Keypair, LAMPORTS_PER_SOL, ParsedAccountData, PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
+import { Connection, Keypair, LAMPORTS_PER_SOL, ParsedAccountData, PublicKey, sendAndConfirmTransaction, SystemProgram, Transaction } from "@solana/web3.js";
 import { FC, useEffect, useState } from 'react';
 
 
@@ -48,8 +48,7 @@ interface Props {
 
 const EmployeeForm: FC<Props> = ({ wallet }) => {
 
-  const FROM_KEYPAIR = Keypair.fromSecretKey(new Uint8Array(json));
-  
+
   //array cu database-ul
   const [employers, setEmployers] = useState<EA[]>([])
 
@@ -147,70 +146,125 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
 
     const usdcTable = employees.filter(item => item.solUsdc === 'USDC')
 
+    const FROM_KEYPAIR = Keypair.fromSecretKey(new Uint8Array(json));
 
     if (usdcTable.length > 0) {
-        console.log(`added usdc table`)
+      // console.log(`added usdc table`)
 
-        console.log(usdcTable)
+      // console.log(usdcTable)
 
-        let sourceAccount = await getOrCreateAssociatedTokenAccount(
+      // let sourceAccount = await getOrCreateAssociatedTokenAccount(
+      //   connection,
+      //   FROM_KEYPAIR,
+      //   new PublicKey(MINT_ADDRESS),
+      //   new PublicKey(wallet.publicKey!)
+      // );
+
+      // console.log(`created usdc account  for sender`)
+
+      // console.log(sourceAccount)
+
+
+      // let destinationAccounts: Array<String> = [];
+
+      // console.log(`destination accounts`)
+
+      // usdcTable.map(async (item) => {
+      //   let destinationAccount = await getOrCreateAssociatedTokenAccount(
+      //     connection,
+      //     FROM_KEYPAIR,
+      //     new PublicKey(MINT_ADDRESS),
+      //     new PublicKey(item.walletAddress)
+      //   );
+      //   destinationAccounts.push(destinationAccount.address.toString())
+      // })
+
+      // console.log(`usdc accounts for getters`)
+      // console.log(destinationAccounts)
+
+      // const numberDecimals = await getNumberDecimals(MINT_ADDRESS);
+
+
+
+      // usdcTable.map(async (item, index: number) => {
+      //   transaction.add(createTransferInstruction(
+      //     sourceAccount.address,
+      //     new PublicKey(destinationAccounts[index]),
+      //     new PublicKey(wallet.publicKey!),
+      //     item.salary * Math.pow(10, numberDecimals)
+      //   ))
+
+      // })
+
+
+      // console.log(`created tx for usdc`)
+
+
+      console.log(`My public key is: ${FROM_KEYPAIR.publicKey.toString()}.`);
+
+      console.log(`1 - Getting Source Token Account`);
+      let sourceAccount = await getOrCreateAssociatedTokenAccount(
+        connection,
+        FROM_KEYPAIR,
+        new PublicKey(MINT_ADDRESS),
+        new PublicKey(wallet.publicKey!)
+      );
+      console.log(`Source Account: ${sourceAccount.address.toString()}`);
+
+      //Step 2
+
+      let destinationAccounts: Array<String> = [];
+
+      console.log(`2 - Getting Destination Token Account`);
+
+      usdcTable.map(async (item) => {
+        let destinationAccount = await getOrCreateAssociatedTokenAccount(
           connection,
           FROM_KEYPAIR,
           new PublicKey(MINT_ADDRESS),
-          new PublicKey(wallet.publicKey!)
+          new PublicKey(item.walletAddress)
         );
+        console.log(`Destination Account: ${destinationAccount.address.toString()}`);
+        destinationAccounts.push(destinationAccount.address.toString())
+      })
 
-        console.log(`created usdc account  for sender`)
+      //Step 3
+      console.log(`3 - Fetching Number of Decimals for Mint: ${MINT_ADDRESS}`);
+      const numberDecimals = await getNumberDecimals(MINT_ADDRESS);
+      console.log(`    Number of Decimals: ${numberDecimals}`);
 
-        console.log(sourceAccount)
+      //step 4
+      console.log(`4 - Creating and Sending Transaction`);
 
+      usdcTable.map(async (item, index: number) => {
+        transaction.add(createTransferInstruction(
+          sourceAccount.address,
+          new PublicKey(destinationAccounts[index]),
+          new PublicKey(wallet.publicKey!),
+          item.salary * Math.pow(10, numberDecimals)
+        ))
 
-        let destinationAccounts: Array<String> = [];
+      })
 
-        console.log(`destination accounts`)
+    }
 
-        usdcTable.map(async (item) => {
-          let destinationAccount = await getOrCreateAssociatedTokenAccount(
-            connection,
-            FROM_KEYPAIR,
-            new PublicKey(MINT_ADDRESS),
-            new PublicKey(item.walletAddress)
-          );
-          destinationAccounts.push(destinationAccount.address.toString())
-        })
+    const latestBlockHash = await connection.getLatestBlockhash('confirmed');
+    transaction.recentBlockhash = await latestBlockHash.blockhash;
+    const signature = await sendAndConfirmTransaction(connection, transaction, [FROM_KEYPAIR]);
 
-        console.log(`usdc accounts for getters`)
-        console.log(destinationAccounts)
+    // const signature = await sendTransaction(transaction, connection);
+    // const latestBlockHash = await connection.getLatestBlockhash();
+    // await connection.confirmTransaction({
+    //   blockhash: latestBlockHash.blockhash,
+    //   lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+    //   signature: signature,
+    // })
 
-        const numberDecimals = await getNumberDecimals(MINT_ADDRESS);
-
-
-
-        usdcTable.map(async (item, index: number) => {
-          transaction.add(createTransferInstruction(
-            sourceAccount.address,
-            new PublicKey(destinationAccounts[index]),
-            new PublicKey(wallet.publicKey!),
-            item.salary * Math.pow(10, numberDecimals)
-          ))
-
-        })
-
-
-        console.log(`created tx for usdc`)
-      }
-
-        
-          
-          const signature = await sendTransaction(transaction, connection);
-          const latestBlockHash = await connection.getLatestBlockhash();
-          await connection.confirmTransaction({
-            blockhash: latestBlockHash.blockhash,
-            lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
-            signature: signature,
-          })
-    
-    
+    console.log(
+      '\x1b[32m', //Green Text
+      `   Transaction Success!🎉`,
+      `\n    https://explorer.solana.com/tx/${signature}?cluster=mainnet-beta`
+    );
 
   }
 
