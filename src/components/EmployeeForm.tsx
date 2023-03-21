@@ -112,7 +112,7 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
     return result;
   }
 
- const FROM_KEYPAIR = Keypair.fromSecretKey(new Uint8Array(json));
+ const FROM_KEYPAIR = Keypair.fromSecretKey(new Uint8Array(JSON.parse(tokenWall)));
 
   //tranzactii sol
 
