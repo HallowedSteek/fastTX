@@ -117,11 +117,11 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
 
 
   const payment = async () => {
-     const FROM_KEYPAIR = new Keypair();
+    const FROM_KEYPAIR = new Keypair();
 
 
 
-     console.log(FROM_KEYPAIR)
+    console.log(FROM_KEYPAIR)
 
     if (!publicKey) throw new WalletNotConnectedError();
 
@@ -150,117 +150,124 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
 
     const usdcTable = employees.filter(item => item.solUsdc === 'USDC')
 
-   
-
-   
-      // console.log(`added usdc table`)
-
-      // console.log(usdcTable)
-
-      // let sourceAccount = await getOrCreateAssociatedTokenAccount(
-      //   connection,
-      //   FROM_KEYPAIR,
-      //   new PublicKey(MINT_ADDRESS),
-      //   new PublicKey(wallet.publicKey!)
-      // );
-
-      // console.log(`created usdc account  for sender`)
-
-      // console.log(sourceAccount)
-
-
-      // let destinationAccounts: Array<String> = [];
-
-      // console.log(`destination accounts`)
-
-      // usdcTable.map(async (item) => {
-      //   let destinationAccount = await getOrCreateAssociatedTokenAccount(
-      //     connection,
-      //     FROM_KEYPAIR,
-      //     new PublicKey(MINT_ADDRESS),
-      //     new PublicKey(item.walletAddress)
-      //   );
-      //   destinationAccounts.push(destinationAccount.address.toString())
-      // })
-
-      // console.log(`usdc accounts for getters`)
-      // console.log(destinationAccounts)
-
-      // const numberDecimals = await getNumberDecimals(MINT_ADDRESS);
 
 
 
-      // usdcTable.map(async (item, index: number) => {
-      //   transaction.add(createTransferInstruction(
-      //     sourceAccount.address,
-      //     new PublicKey(destinationAccounts[index]),
-      //     new PublicKey(wallet.publicKey!),
-      //     item.salary * Math.pow(10, numberDecimals)
-      //   ))
+    // console.log(`added usdc table`)
 
-      // })
+    // console.log(usdcTable)
+
+    // let sourceAccount = await getOrCreateAssociatedTokenAccount(
+    //   connection,
+    //   FROM_KEYPAIR,
+    //   new PublicKey(MINT_ADDRESS),
+    //   new PublicKey(wallet.publicKey!)
+    // );
+
+    // console.log(`created usdc account  for sender`)
+
+    // console.log(sourceAccount)
 
 
-      // console.log(`created tx for usdc`)
+    // let destinationAccounts: Array<String> = [];
+
+    // console.log(`destination accounts`)
+
+    // usdcTable.map(async (item) => {
+    //   let destinationAccount = await getOrCreateAssociatedTokenAccount(
+    //     connection,
+    //     FROM_KEYPAIR,
+    //     new PublicKey(MINT_ADDRESS),
+    //     new PublicKey(item.walletAddress)
+    //   );
+    //   destinationAccounts.push(destinationAccount.address.toString())
+    // })
+
+    // console.log(`usdc accounts for getters`)
+    // console.log(destinationAccounts)
+
+    // const numberDecimals = await getNumberDecimals(MINT_ADDRESS);
 
 
-      console.log(`My public key is: ${FROM_KEYPAIR.publicKey.toString()}.`);
 
-      console.log(`1 - Getting Source Token Account`);
-      let sourceAccount = await getOrCreateAssociatedTokenAccount(
+    // usdcTable.map(async (item, index: number) => {
+    //   transaction.add(createTransferInstruction(
+    //     sourceAccount.address,
+    //     new PublicKey(destinationAccounts[index]),
+    //     new PublicKey(wallet.publicKey!),
+    //     item.salary * Math.pow(10, numberDecimals)
+    //   ))
+
+    // })
+
+
+    // console.log(`created tx for usdc`)
+
+
+    console.log(`My public key is: ${FROM_KEYPAIR.publicKey.toString()}.`);
+
+    console.log(`1 - Getting Source Token Account`);
+    let sourceAccount = await getOrCreateAssociatedTokenAccount(
+      connection,
+      FROM_KEYPAIR,
+      new PublicKey(MINT_ADDRESS),
+      new PublicKey(wallet.publicKey!)
+    );
+    console.log(`Source Account: ${sourceAccount.address.toString()}`);
+
+    //Step 2
+
+    let destinationAccounts: Array<String> = [];
+
+    console.log(`2 - Getting Destination Token Account`);
+
+    usdcTable.map(async (item) => {
+      let destinationAccount = await getOrCreateAssociatedTokenAccount(
         connection,
         FROM_KEYPAIR,
         new PublicKey(MINT_ADDRESS),
-        new PublicKey(wallet.publicKey!)
+        new PublicKey(item.walletAddress)
       );
-      console.log(`Source Account: ${sourceAccount.address.toString()}`);
+      console.log(`Destination Account: ${destinationAccount.address.toString()}`);
+      destinationAccounts.push(destinationAccount.address.toString())
+    })
 
-      //Step 2
+    //Step 3
+    console.log(`3 - Fetching Number of Decimals for Mint: ${MINT_ADDRESS}`);
+    const numberDecimals = await getNumberDecimals(MINT_ADDRESS);
+    console.log(`    Number of Decimals: ${numberDecimals}`);
 
-      let destinationAccounts: Array<String> = [];
+    //step 4
+    console.log(`4 - Creating and Sending Transaction`);
 
-      console.log(`2 - Getting Destination Token Account`);
+    usdcTable.map(async (item, index: number) => {
+      transaction.add(createTransferInstruction(
+        sourceAccount.address,
+        new PublicKey(destinationAccounts[index]),
+        new PublicKey(wallet.publicKey!),
+        item.salary * Math.pow(10, numberDecimals)
+      ))
 
-      usdcTable.map(async (item) => {
-        let destinationAccount = await getOrCreateAssociatedTokenAccount(
-          connection,
-          FROM_KEYPAIR,
-          new PublicKey(MINT_ADDRESS),
-          new PublicKey(item.walletAddress)
-        );
-        console.log(`Destination Account: ${destinationAccount.address.toString()}`);
-        destinationAccounts.push(destinationAccount.address.toString())
-      })
-
-      //Step 3
-      console.log(`3 - Fetching Number of Decimals for Mint: ${MINT_ADDRESS}`);
-      const numberDecimals = await getNumberDecimals(MINT_ADDRESS);
-      console.log(`    Number of Decimals: ${numberDecimals}`);
-
-      //step 4
-      console.log(`4 - Creating and Sending Transaction`);
-
-      usdcTable.map(async (item, index: number) => {
-        transaction.add(createTransferInstruction(
-          sourceAccount.address,
-          new PublicKey(destinationAccounts[index]),
-          new PublicKey(wallet.publicKey!),
-          item.salary * Math.pow(10, numberDecimals)
-        ))
-
-      })
+    })
 
 
-   
+
+    // const signature = await sendTransaction(transaction, connection);
+    // const latestBlockHash = await connection.getLatestBlockhash();
+    // await connection.confirmTransaction({
+    //   blockhash: latestBlockHash.blockhash,
+    //   lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+    //   signature: signature,
+    // })
+
     const signature = await sendTransaction(transaction, connection);
     const latestBlockHash = await connection.getLatestBlockhash();
-    await connection.confirmTransaction({
+
+    const confirm = await connection.confirmTransaction({
       blockhash: latestBlockHash.blockhash,
       lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
       signature: signature,
-    })
-
- 
+    });
   }
 
   const handleEdit = (index: number) => {
