@@ -148,6 +148,8 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
       new PublicKey(wallet.publicKey!)
     );
 
+    console.log(`Source account: ${sourceAccount}`)
+
 
     let destinationAccounts: Array<String> = [];
 
@@ -161,7 +163,7 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
       destinationAccounts.push(destinationAccount.address.toString())
     })
 
-
+    console.log(`Source account: ${destinationAccounts}`)
 
     const numberDecimals = await getNumberDecimals(MINT_ADDRESS);
 
