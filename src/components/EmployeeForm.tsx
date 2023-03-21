@@ -140,45 +140,47 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
 
     const usdcTable = employees.filter(item => item.solUsdc === 'USDC')
 
-
-    let sourceAccount = await getOrCreateAssociatedTokenAccount(
-      connection,
-      Keypair.fromSecretKey(new Uint8Array(json)),
-      new PublicKey(MINT_ADDRESS),
-      new PublicKey(wallet.publicKey!)
-    );
-
-    console.log(sourceAccount)
-
-
-    let destinationAccounts: Array<String> = [];
-
-    usdcTable.map(async (item) => {
-      let destinationAccount = await getOrCreateAssociatedTokenAccount(
+    if (usdcTable){
+      let sourceAccount = await getOrCreateAssociatedTokenAccount(
         connection,
         Keypair.fromSecretKey(new Uint8Array(json)),
         new PublicKey(MINT_ADDRESS),
-        new PublicKey(item.walletAddress)
+        new PublicKey(wallet.publicKey!)
       );
-      destinationAccounts.push(destinationAccount.address.toString())
-    })
+  
+      console.log(sourceAccount)
+  
+  
+      let destinationAccounts: Array<String> = [];
+  
+      usdcTable.map(async (item) => {
+        let destinationAccount = await getOrCreateAssociatedTokenAccount(
+          connection,
+          Keypair.fromSecretKey(new Uint8Array(json)),
+          new PublicKey(MINT_ADDRESS),
+          new PublicKey(item.walletAddress)
+        );
+        destinationAccounts.push(destinationAccount.address.toString())
+      })
+  
+      console.log(destinationAccounts)
+  
+      const numberDecimals = await getNumberDecimals(MINT_ADDRESS);
+  
+  
+  
+      usdcTable.map(async (item, index: number) => {
+        transaction.add(createTransferInstruction(
+          sourceAccount.address,
+          new PublicKey(destinationAccounts[index]),
+          new PublicKey(wallet.publicKey!),
+          item.salary * Math.pow(10, numberDecimals)
+        ))
+  
+      })  
+    }
 
-    console.log(destinationAccounts)
-
-    const numberDecimals = await getNumberDecimals(MINT_ADDRESS);
-
-
-
-    usdcTable.map(async (item, index: number) => {
-      transaction.add(createTransferInstruction(
-        sourceAccount.address,
-        new PublicKey(destinationAccounts[index]),
-        new PublicKey(wallet.publicKey!),
-        item.salary * Math.pow(10, numberDecimals)
-      ))
-
-    })
-
+  
 
     const signature = await sendTransaction(transaction, connection);
     const latestBlockHash = await connection.getLatestBlockhash();
