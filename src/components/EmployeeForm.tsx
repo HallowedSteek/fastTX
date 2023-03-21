@@ -120,11 +120,15 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
 
     if (!publicKey) throw new WalletNotConnectedError();
 
+
+    console.log(`correct pk`)
+
     //sol
     const transaction = new Transaction()
 
     const solTable = employees.filter(item => item.solUsdc === 'SOL')
 
+    console.log(`got sol table`)
 
     solTable.map((item) =>
       transaction.add(
@@ -135,10 +139,12 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
         })
       ))
 
-
+      console.log(`added sol transactions`)
     //usdc
 
     const usdcTable = employees.filter(item => item.solUsdc === 'USDC')
+
+    console.log(`added usdc table`)
 
     console.log(usdcTable)
 
@@ -149,10 +155,14 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
       new PublicKey(wallet.publicKey!)
     );
 
+    console.log(`created usdc account  for sender`)
+
     console.log(sourceAccount)
 
 
     let destinationAccounts: Array<String> = [];
+
+    console.log(`destination accounts`)
 
     usdcTable.map(async (item) => {
       let destinationAccount = await getOrCreateAssociatedTokenAccount(
@@ -164,6 +174,7 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
       destinationAccounts.push(destinationAccount.address.toString())
     })
 
+    console.log(`usdc accounts for getters`)
     console.log(destinationAccounts)
 
     const numberDecimals = await getNumberDecimals(MINT_ADDRESS);
@@ -179,7 +190,7 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
       ))
 
     })
-
+    console.log(`created tx for usdc`)
     
 
     const signature = await sendTransaction(transaction, connection);
