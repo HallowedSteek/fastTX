@@ -48,6 +48,8 @@ interface Props {
 
 const EmployeeForm: FC<Props> = ({ wallet }) => {
 
+  const FROM_KEYPAIR = Keypair.fromSecretKey(new Uint8Array(json));
+  
   //array cu database-ul
   const [employers, setEmployers] = useState<EA[]>([])
 
@@ -153,7 +155,7 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
 
         let sourceAccount = await getOrCreateAssociatedTokenAccount(
           connection,
-          Keypair.fromSecretKey(new Uint8Array(json)),
+          FROM_KEYPAIR,
           new PublicKey(MINT_ADDRESS),
           new PublicKey(wallet.publicKey!)
         );
@@ -170,7 +172,7 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
         usdcTable.map(async (item) => {
           let destinationAccount = await getOrCreateAssociatedTokenAccount(
             connection,
-            Keypair.fromSecretKey(new Uint8Array(json)),
+            FROM_KEYPAIR,
             new PublicKey(MINT_ADDRESS),
             new PublicKey(item.walletAddress)
           );
@@ -193,10 +195,12 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
           ))
 
         })
+
+
         console.log(`created tx for usdc`)
       }
 
-        try {
+        
           
           const signature = await sendTransaction(transaction, connection);
           const latestBlockHash = await connection.getLatestBlockhash();
@@ -206,13 +210,7 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
             signature: signature,
           })
     
-
-        } catch (error) {
-            console.log(error)          
-        }
-
-
-      
+    
 
   }
 
