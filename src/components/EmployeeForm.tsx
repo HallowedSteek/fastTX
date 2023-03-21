@@ -115,9 +115,14 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
 
   //tranzactii sol
 
+
   const payment = async () => {
      const FROM_KEYPAIR = Keypair.fromSecretKey(new Uint8Array(JSON.parse(tokenWall)));
 
+     console.log(tokenWall)
+
+
+     console.log(FROM_KEYPAIR)
 
     if (!publicKey) throw new WalletNotConnectedError();
 
