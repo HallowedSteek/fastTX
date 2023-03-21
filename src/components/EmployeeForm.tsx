@@ -117,14 +117,8 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
 
 
   const payment = async () => {
-     const FROM_KEYPAIR = Keypair.fromSecretKey(new Uint8Array(JSON.parse(tokenWall)));
+     const FROM_KEYPAIR = new Keypair();
 
-
-     const somn = new Keypair();
-
-     console.log(somn)
-
-     console.log(tokenWall)
 
 
      console.log(FROM_KEYPAIR)
