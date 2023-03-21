@@ -8,7 +8,7 @@ import getEmployers from '../api/getEmployers';
 
 import "../App.css";
 import SubscriptionTable from './EmployerFormComp/SubscriptionTable';
-import { createTransferInstruction, getAssociatedTokenAddress, getOrCreateAssociatedTokenAccount } from '@solana/spl-token';
+import { createTransferInstruction, getOrCreateAssociatedTokenAccount } from '@solana/spl-token';
 
 import EmployeeTable from './EmployerFormComp/EmployeeTable';
 import EmployeeAddSection from './EmployerFormComp/EmployeeAddSection';
@@ -97,7 +97,6 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
   );
 
 
-  console.log(connection)
 
   //tranzactii usdc
 
@@ -109,7 +108,6 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
   async function getNumberDecimals(mintAddress: string): Promise<number> {
     const info = await connection.getParsedAccountInfo(new PublicKey(MINT_ADDRESS));
     const result = (info.value?.data as ParsedAccountData).parsed.info.decimals as number;
-    console.log(result)
     return result;
   }
 
@@ -119,7 +117,6 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
 
   const payment = async () => {
 
-    console.log(wallet.publicKey?.toBase58())
 
     if (!publicKey) throw new WalletNotConnectedError();
 
@@ -128,7 +125,6 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
 
     const solTable = employees.filter(item => item.solUsdc === 'SOL')
 
-    console.log(solTable)
 
     solTable.map((item) =>
       transaction.add(
@@ -143,17 +139,14 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
     //usdc
 
     const usdcTable = employees.filter(item => item.solUsdc === 'USDC')
-    console.log(usdcTable)
 
 
-    console.log(`1 - Getting Source Token Account`);
     let sourceAccount = await getOrCreateAssociatedTokenAccount(
       connection,
       Keypair.fromSecretKey(new Uint8Array(JSON.parse(tokenWall))),
       new PublicKey(MINT_ADDRESS),
       new PublicKey(wallet.publicKey!)
     );
-    console.log(`Source Account: ${sourceAccount.address.toString()}`);
 
 
     let destinationAccounts: Array<String> = [];
@@ -165,22 +158,12 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
         new PublicKey(MINT_ADDRESS),
         new PublicKey(item.walletAddress)
       );
-      console.log(`pentru ${item.walletAddress} avem ${destinationAccount.address.toString()}`)
       destinationAccounts.push(destinationAccount.address.toString())
     })
 
 
-    let tokenAddress = await getAssociatedTokenAddress(
-      sourceAccount.address,
-      new PublicKey(wallet.publicKey!),
-    )
 
-    console.log(tokenAddress)
-
-    //Step 3
-    console.log(`3 - Fetching Number of Decimals for Mint: ${MINT_ADDRESS}`);
     const numberDecimals = await getNumberDecimals(MINT_ADDRESS);
-    console.log(`Number of Decimals: ${numberDecimals}`);
 
 
 
