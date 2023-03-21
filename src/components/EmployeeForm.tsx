@@ -1,6 +1,6 @@
 import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
 import { WalletContextState } from '@solana/wallet-adapter-react';
-import { Connection, Keypair, LAMPORTS_PER_SOL, ParsedAccountData, PublicKey, sendAndConfirmTransaction, SystemProgram, Transaction } from "@solana/web3.js";
+import { Connection, Keypair, LAMPORTS_PER_SOL, ParsedAccountData, PublicKey,SystemProgram, Transaction } from "@solana/web3.js";
 import { FC, useEffect, useState } from 'react';
 
 
@@ -14,7 +14,6 @@ import EmployeeTable from './EmployerFormComp/EmployeeTable';
 import EmployeeAddSection from './EmployerFormComp/EmployeeAddSection';
 import getWallet from '../api/getWallet';
 
-import json from '../utils/resource.json'
 
 
 export type Employee = {
@@ -117,23 +116,18 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
 
 
   const payment = async () => {
+
     const FROM_KEYPAIR = new Keypair();
-
-
-
-    console.log(FROM_KEYPAIR)
 
     if (!publicKey) throw new WalletNotConnectedError();
 
 
-    console.log(`correct pk`)
 
     //sol
     const transaction = new Transaction()
 
     const solTable = employees.filter(item => item.solUsdc === 'SOL')
 
-    console.log(`got sol table`)
 
     solTable.map((item) =>
       transaction.add(
@@ -144,69 +138,11 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
         })
       ))
 
-    console.log(`added sol transactions`)
-
-    //usdc
-
     const usdcTable = employees.filter(item => item.solUsdc === 'USDC')
 
 
 
 
-    // console.log(`added usdc table`)
-
-    // console.log(usdcTable)
-
-    // let sourceAccount = await getOrCreateAssociatedTokenAccount(
-    //   connection,
-    //   FROM_KEYPAIR,
-    //   new PublicKey(MINT_ADDRESS),
-    //   new PublicKey(wallet.publicKey!)
-    // );
-
-    // console.log(`created usdc account  for sender`)
-
-    // console.log(sourceAccount)
-
-
-    // let destinationAccounts: Array<String> = [];
-
-    // console.log(`destination accounts`)
-
-    // usdcTable.map(async (item) => {
-    //   let destinationAccount = await getOrCreateAssociatedTokenAccount(
-    //     connection,
-    //     FROM_KEYPAIR,
-    //     new PublicKey(MINT_ADDRESS),
-    //     new PublicKey(item.walletAddress)
-    //   );
-    //   destinationAccounts.push(destinationAccount.address.toString())
-    // })
-
-    // console.log(`usdc accounts for getters`)
-    // console.log(destinationAccounts)
-
-    // const numberDecimals = await getNumberDecimals(MINT_ADDRESS);
-
-
-
-    // usdcTable.map(async (item, index: number) => {
-    //   transaction.add(createTransferInstruction(
-    //     sourceAccount.address,
-    //     new PublicKey(destinationAccounts[index]),
-    //     new PublicKey(wallet.publicKey!),
-    //     item.salary * Math.pow(10, numberDecimals)
-    //   ))
-
-    // })
-
-
-    // console.log(`created tx for usdc`)
-
-
-    console.log(`My public key is: ${FROM_KEYPAIR.publicKey.toString()}.`);
-
-    console.log(`1 - Getting Source Token Account`);
 
     let sourceAccount = await getOrCreateAssociatedTokenAccount(
       connection,
@@ -214,13 +150,9 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
       new PublicKey(MINT_ADDRESS),
       new PublicKey(publicKey)
     );
-    console.log(`Source Account: ${sourceAccount.address.toString()}`);
-
-    //Step 2
 
     let destinationAccounts: Array<PublicKey> = [];
 
-    console.log(`2 - Getting Destination Token Account`);
 
     usdcTable.map(async (item) => {
       let destinationAccount = await getOrCreateAssociatedTokenAccount(
@@ -232,17 +164,10 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
       destinationAccounts.push(destinationAccount.address)
     })
 
-    console.log("destination accounts:")
 
-    destinationAccounts.map(item=> console.log(item))
 
-    //Step 3
-    console.log(`3 - Fetching Number of Decimals for Mint: ${MINT_ADDRESS}`);
     const numberDecimals = await getNumberDecimals(MINT_ADDRESS);
-    console.log(`Number of Decimals: ${numberDecimals}`);
 
-    //step 4
-    console.log(`4 - Creating and Sending Transaction`);
 
     usdcTable.map(async (item, index: number) => {
       transaction.add(createTransferInstruction(
