@@ -248,24 +248,16 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
 
     }
 
-    const latestBlockHash = await connection.getLatestBlockhash('confirmed');
-    transaction.recentBlockhash = await latestBlockHash.blockhash;
-    const signature = await sendAndConfirmTransaction(connection, transaction, [FROM_KEYPAIR]);
+   
+    const signature = await sendTransaction(transaction, connection);
+    const latestBlockHash = await connection.getLatestBlockhash();
+    await connection.confirmTransaction({
+      blockhash: latestBlockHash.blockhash,
+      lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+      signature: signature,
+    })
 
-    // const signature = await sendTransaction(transaction, connection);
-    // const latestBlockHash = await connection.getLatestBlockhash();
-    // await connection.confirmTransaction({
-    //   blockhash: latestBlockHash.blockhash,
-    //   lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
-    //   signature: signature,
-    // })
-
-    console.log(
-      '\x1b[32m', //Green Text
-      `   Transaction Success!🎉`,
-      `\n    https://explorer.solana.com/tx/${signature}?cluster=mainnet-beta`
-    );
-
+ 
   }
 
   const handleEdit = (index: number) => {
