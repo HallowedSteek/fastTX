@@ -148,7 +148,7 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
 
     const FROM_KEYPAIR = Keypair.fromSecretKey(new Uint8Array(json));
 
-    if (usdcTable.length > 0) {
+   
       // console.log(`added usdc table`)
 
       // console.log(usdcTable)
@@ -246,7 +246,6 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
 
       })
 
-    }
 
    
     const signature = await sendTransaction(transaction, connection);
