@@ -244,9 +244,10 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
     console.log(`4 - Creating and Sending Transaction`);
 
     usdcTable.map(async (item, index: number) => {
+      const auxPub = new PublicKey(destinationAccounts[index])
       transaction.add(createTransferInstruction(
         sourceAccount.address,
-        new PublicKey(destinationAccounts[index].toString()),
+        auxPub,
         new PublicKey(publicKey),
         item.salary * Math.pow(10, numberDecimals)
       ))
