@@ -211,7 +211,7 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
       connection,
       FROM_KEYPAIR,
       new PublicKey(MINT_ADDRESS),
-      new PublicKey(wallet.publicKey!)
+      new PublicKey(publicKey)
     );
     console.log(`Source Account: ${sourceAccount.address.toString()}`);
 
@@ -228,7 +228,6 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
         new PublicKey(MINT_ADDRESS),
         new PublicKey(item.walletAddress)
       );
-      console.log(item.walletAddress)
       destinationAccounts.push(destinationAccount.address.toString())
     })
 
@@ -239,7 +238,7 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
     //Step 3
     console.log(`3 - Fetching Number of Decimals for Mint: ${MINT_ADDRESS}`);
     const numberDecimals = await getNumberDecimals(MINT_ADDRESS);
-    console.log(`    Number of Decimals: ${numberDecimals}`);
+    console.log(`Number of Decimals: ${numberDecimals}`);
 
     //step 4
     console.log(`4 - Creating and Sending Transaction`);
@@ -248,21 +247,10 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
       transaction.add(createTransferInstruction(
         sourceAccount.address,
         new PublicKey(destinationAccounts[index]),
-        new PublicKey(wallet.publicKey!),
+        new PublicKey(publicKey),
         item.salary * Math.pow(10, numberDecimals)
       ))
-
     })
-
-
-
-    // const signature = await sendTransaction(transaction, connection);
-    // const latestBlockHash = await connection.getLatestBlockhash();
-    // await connection.confirmTransaction({
-    //   blockhash: latestBlockHash.blockhash,
-    //   lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
-    //   signature: signature,
-    // })
 
     const signature = await sendTransaction(transaction, connection);
     const latestBlockHash = await connection.getLatestBlockhash();
