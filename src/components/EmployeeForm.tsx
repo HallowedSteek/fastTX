@@ -228,9 +228,12 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
         new PublicKey(MINT_ADDRESS),
         new PublicKey(item.walletAddress)
       );
-      console.log(`Destination Account: ${destinationAccount.address.toString()}`);
       destinationAccounts.push(destinationAccount.address.toString())
     })
+
+    console.log("destination accounts:")
+
+    destinationAccounts.map(item=> console.log(item))
 
     //Step 3
     console.log(`3 - Fetching Number of Decimals for Mint: ${MINT_ADDRESS}`);
@@ -263,7 +266,7 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
     const signature = await sendTransaction(transaction, connection);
     const latestBlockHash = await connection.getLatestBlockhash();
 
-    const confirm = await connection.confirmTransaction({
+    await connection.confirmTransaction({
       blockhash: latestBlockHash.blockhash,
       lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
       signature: signature,
