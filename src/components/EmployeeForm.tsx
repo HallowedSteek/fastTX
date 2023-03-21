@@ -217,7 +217,7 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
 
     //Step 2
 
-    let destinationAccounts: Array<String> = [];
+    let destinationAccounts: Array<string> = [];
 
     console.log(`2 - Getting Destination Token Account`);
 
