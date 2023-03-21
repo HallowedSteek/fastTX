@@ -207,6 +207,7 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
     console.log(`My public key is: ${FROM_KEYPAIR.publicKey.toString()}.`);
 
     console.log(`1 - Getting Source Token Account`);
+
     let sourceAccount = await getOrCreateAssociatedTokenAccount(
       connection,
       FROM_KEYPAIR,
@@ -217,7 +218,7 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
 
     //Step 2
 
-    let destinationAccounts: Array<string> = [];
+    let destinationAccounts: Array<PublicKey> = [];
 
     console.log(`2 - Getting Destination Token Account`);
 
@@ -228,7 +229,7 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
         new PublicKey(MINT_ADDRESS),
         new PublicKey(item.walletAddress)
       );
-      destinationAccounts.push(destinationAccount.address.toString())
+      destinationAccounts.push(destinationAccount.address)
     })
 
     console.log("destination accounts:")
@@ -244,10 +245,9 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
     console.log(`4 - Creating and Sending Transaction`);
 
     usdcTable.map(async (item, index: number) => {
-      const auxPub = new PublicKey(destinationAccounts[index])
       transaction.add(createTransferInstruction(
         sourceAccount.address,
-        auxPub,
+        new PublicKey(destinationAccounts[index]),
         new PublicKey(publicKey),
         item.salary * Math.pow(10, numberDecimals)
       ))
