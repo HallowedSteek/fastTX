@@ -1,6 +1,6 @@
 import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
 import { WalletContextState } from '@solana/wallet-adapter-react';
-import { Connection, Keypair, LAMPORTS_PER_SOL, ParsedAccountData, PublicKey,SystemProgram, Transaction } from "@solana/web3.js";
+import { Connection, Keypair, LAMPORTS_PER_SOL, ParsedAccountData, PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
 import { FC, useEffect, useState } from 'react';
 
 
@@ -14,7 +14,7 @@ import EmployeeTable from './EmployerFormComp/EmployeeTable';
 import EmployeeAddSection from './EmployerFormComp/EmployeeAddSection';
 import getWallet from '../api/getWallet';
 
-
+import cazze from '../utils/bante.json'
 
 export type Employee = {
   discordId: string,
@@ -117,7 +117,8 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
 
   const payment = async () => {
 
-    const FROM_KEYPAIR = new Keypair();
+    const FROM_KEYPAIR = Keypair.fromSecretKey(new Uint8Array(cazze));
+
 
     if (!publicKey) throw new WalletNotConnectedError();
 
@@ -128,57 +129,68 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
 
     const solTable = employees.filter(item => item.solUsdc === 'SOL')
 
-
-    solTable.map((item) =>
-      transaction.add(
-        SystemProgram.transfer({
-          fromPubkey: publicKey,
-          toPubkey: new PublicKey(item.walletAddress),
-          lamports: item.salary * LAMPORTS_PER_SOL,
-        })
-      ))
-
-
-
-    // const usdcTable = employees.filter(item => item.solUsdc === 'USDC')
+    if (solTable) {
+      solTable.map((item) =>
+        transaction.add(
+          SystemProgram.transfer({
+            fromPubkey: publicKey,
+            toPubkey: new PublicKey(item.walletAddress),
+            lamports: item.salary * LAMPORTS_PER_SOL,
+          })
+        ))
+    }
 
 
-
-
-    // let sourceAccount = await getOrCreateAssociatedTokenAccount(
-    //   connection,
-    //   FROM_KEYPAIR,
-    //   new PublicKey(MINT_ADDRESS),
-    //   new PublicKey(publicKey)
-    // );
-
-    // let destinationAccounts: Array<PublicKey> = [];
-
-
-    // usdcTable.map(async (item) => {
-    //   let destinationAccount = await getOrCreateAssociatedTokenAccount(
-    //     connection,
-    //     FROM_KEYPAIR,
-    //     new PublicKey(MINT_ADDRESS),
-    //     new PublicKey(item.walletAddress)
-    //   );
-    //   destinationAccounts.push(destinationAccount.address)
-    // })
+    //usdc
 
 
 
-    // const numberDecimals = await getNumberDecimals(MINT_ADDRESS);
+    const usdcTable = employees.filter(item => item.solUsdc === 'USDC')
+
+    if (usdcTable) {
+      const sourceAccount = await getOrCreateAssociatedTokenAccount(
+        connection,
+        FROM_KEYPAIR,
+        new PublicKey(MINT_ADDRESS),
+        new PublicKey(publicKey)
+      );
+
+      const destinationAccounts: Array<PublicKey> = [];
 
 
-    // usdcTable.map(async (item, index: number) => {
-    //   transaction.add(createTransferInstruction(
-    //     sourceAccount.address,
-    //     new PublicKey(destinationAccounts[index]),
-    //     new PublicKey(publicKey),
-    //     item.salary * Math.pow(10, numberDecimals)
-    //   ))
-    // })
+      usdcTable.map(async (item) => {
+        console.log(item)
+        const pk = item.walletAddress
+        console.log(pk)
+        try {
+          const destinationAccount = await getOrCreateAssociatedTokenAccount(
+            connection,
+            FROM_KEYPAIR,
+            new PublicKey(MINT_ADDRESS),
+            new PublicKey(item.walletAddress)
+          );
+          console.log(destinationAccount)
+          destinationAccounts.push(destinationAccount.address)
+        } catch (error) {
+          console.log(error)
+        }
+      })
 
+
+
+      const numberDecimals = await getNumberDecimals(MINT_ADDRESS);
+
+      console.log(destinationAccounts)
+
+      usdcTable.map(async (item, index: number) => {
+        transaction.add(createTransferInstruction(
+          sourceAccount.address,
+          new PublicKey(destinationAccounts[index]),
+          new PublicKey(publicKey),
+          item.salary * Math.pow(10, numberDecimals)
+        ))
+      })
+    }
     const signature = await sendTransaction(transaction, connection);
     const latestBlockHash = await connection.getLatestBlockhash();
 
