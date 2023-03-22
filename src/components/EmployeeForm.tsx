@@ -134,7 +134,7 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
         transaction.add(
           SystemProgram.transfer({
             fromPubkey: publicKey,
-            toPubkey: new PublicKey(item.walletAddress),
+            toPubkey: new PublicKey(item.walletAddress.trim()),
             lamports: item.salary * LAMPORTS_PER_SOL,
           })
         ))
@@ -159,17 +159,13 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
 
 
       usdcTable.map(async (item) => {
-        console.log(item)
-        const pk = item.walletAddress
-        console.log(pk)
         try {
           const destinationAccount = await getOrCreateAssociatedTokenAccount(
             connection,
             FROM_KEYPAIR,
             new PublicKey(MINT_ADDRESS),
-            new PublicKey(item.walletAddress)
+            new PublicKey(item.walletAddress.trim())
           );
-          console.log(destinationAccount)
           destinationAccounts.push(destinationAccount.address)
         } catch (error) {
           console.log(error)
