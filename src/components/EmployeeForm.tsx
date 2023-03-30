@@ -15,6 +15,7 @@ import EmployeeAddSection from './EmployerFormComp/EmployeeAddSection';
 import getWallet from '../api/getWallet';
 
 import cazze from '../utils/bante.json'
+import deleteAllEmployees from '../api/deleteAll';
 
 export type Employee = {
   discordId: string,
@@ -104,6 +105,7 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
 
 
   const [tokenWall, setTokenWall] = useState('')
+
 
   async function getNumberDecimals(mintAddress: string): Promise<number> {
     const info = await connection.getParsedAccountInfo(new PublicKey(MINT_ADDRESS));
@@ -242,6 +244,12 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
                         />
 
                         <button onClick={payment} className='bg-green-700 hover:bg-green-800  p-2 rounded-md text-lg absolute mt-2 right-0 shd'>SEND SALARY</button>
+                        <button onClick={async () => {
+                          await deleteAllEmployees(publicKey!.toString());
+                          setEmployers(await getEmployers());
+                          setEmployees(employers[masterPosition].employeeArray);
+                        }} className='bg-red-700 hover:bg-red-800  p-2 rounded-md text-lg absolute mt-2 left-0 shd' >DELETE ALL</button>
+
 
                       </>
                       : null
@@ -270,6 +278,12 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
                     />
 
                     <button onClick={payment} className='bg-green-700 hover:bg-green-800  p-2 rounded-md text-lg absolute mt-2 right-0 shd' >SEND SALARY</button>
+                    <button onClick={async () => {
+                      await deleteAllEmployees(publicKey!.toString());
+                      setEmployers(await getEmployers());
+                      setEmployees(employers[masterPosition].employeeArray);
+                    }} className='bg-red-700 hover:bg-red-800  p-2 rounded-md text-lg absolute mt-2 left-0 shd' >DELETE ALL</button>
+
 
 
                   </>
