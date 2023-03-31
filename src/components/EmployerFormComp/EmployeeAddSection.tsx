@@ -104,8 +104,14 @@ const EmployeeAddSection: FC<Props> = ({ publicKey, setEmployers, setEmployees, 
                                 placeholder='Wallet Address...'
                             />
                         </div>
-                        <div className='self-center mt-4 items-center justify-center content-center lg:self-end flex flex-col lg:flex-row gap-2 lg:gap-4'>
-                            <CSVReader />
+                        <div className='self-center mt-4 items-center w-full min-w-fit  justify-center lg:justify-between  flex flex-col lg:flex-row gap-2 lg:gap-4'>
+                            <div className='flex flex-col gap-4'>
+                                <CSVReader />
+                                <div className='flex flex-row justify-between gap-3'>
+                                    <button className=' bg-purple-600 hover:bg-purple-700 p-2  mr-8 lg:mr-0 text-xl rounded w-auto shd' type="button">EXPORT TABLE</button>
+                                    <button className=' bg-purple-600 hover:bg-purple-700 p-2  mr-8 lg:mr-0 text-xl rounded w-auto shd' type="button">IMPORT CSV</button>
+                                </div>
+                            </div>
                             <button className=' bg-purple-600 hover:bg-purple-700 p-2  mr-8 lg:mr-0 text-xl rounded w-auto shd' type="submit">ADD EMPLOYEE</button>
                         </div>
 
