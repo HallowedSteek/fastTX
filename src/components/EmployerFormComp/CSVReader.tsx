@@ -1,4 +1,4 @@
-import { useState, CSSProperties } from 'react';
+import { useState, CSSProperties, FC } from 'react';
 import {
     useCSVReader,
     lightenDarkenColor,
@@ -80,24 +80,53 @@ const styles = {
 };
 
 type Props = {
-    data: string[];
+  setData: (value: React.SetStateAction<Array<Array<string>>>) => void;
 }
 
 
-const CSVReader = () => {
+const CSVReader:FC<Props> = ({setData}) => {
     const { CSVReader } = useCSVReader();
     const [zoneHover, setZoneHover] = useState(false);
     const [removeHoverColor, setRemoveHoverColor] = useState(
         DEFAULT_REMOVE_HOVER_COLOR
     );
 
+
     return (
         <CSVReader
             onUploadAccepted={(results: any) => {
-                console.log('---------------------------');
-                console.log(results);
-                console.log(typeof (results.data[0]))
-                console.log('---------------------------');
+                // console.log('---------------------------');
+                // console.log(results);
+                // console.log(results.data[1][0])
+                // console.log(typeof (results.data[0][0]))
+                // console.log('---------------------------');
+                
+                let check = true;
+
+                 results.data[0].map((item:string)=>{
+                    const header = item.toLowerCase().replace(" ","");
+                    if(header==="discordid" || header==="role" || header==="salary" || header==="walletaddress" ){
+                         return true;
+                        }
+                    else{
+                        check = false;
+                        return false;
+                    }
+                });
+
+                console.log(check);
+
+                if(check){
+                    setData([]);
+                    results.data.map((item:any, index:number)=>{
+                        if(index>0)
+                        { 
+                            console.log(item);
+                            setData(prevItem=>[...prevItem,item])
+                        }
+                    })
+                }
+                
                 setZoneHover(false);
             }}
             onDragOver={(event: DragEvent) => {

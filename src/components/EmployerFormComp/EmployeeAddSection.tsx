@@ -21,6 +21,23 @@ const EmployeeAddSection: FC<Props> = ({ publicKey, setEmployers, setEmployees, 
 
     const input = 'text-black indent-2 max-w-[300px] rounded-xl shd mr-12'
 
+    const [data, setData] =  useState<Array<Array<string>>>([])
+
+    const csvEMP:Employee={
+        discordId: '',
+        role: '',
+        salary: 0,
+        walletAddress: '',
+        solUsdc: '',
+        edit: false,
+      }
+
+    const handleCSV = ()=>{
+        data.map(item=>{
+            console.log(item)
+        })
+    }
+
     return (
         <>
             <Formik
@@ -106,10 +123,10 @@ const EmployeeAddSection: FC<Props> = ({ publicKey, setEmployers, setEmployees, 
                         </div>
                         <div className='self-center mt-4 items-center w-full min-w-fit  justify-center lg:justify-between  flex flex-col lg:flex-row gap-2 lg:gap-4'>
                             <div className='flex flex-col gap-4'>
-                                <CSVReader />
+                                <CSVReader setData={setData} />
                                 <div className='flex flex-row justify-between gap-3'>
                                     <button className=' bg-purple-600 hover:bg-purple-700 p-2  mr-8 lg:mr-0 text-xl rounded w-auto shd' type="button">EXPORT TABLE</button>
-                                    <button className=' bg-purple-600 hover:bg-purple-700 p-2  mr-8 lg:mr-0 text-xl rounded w-auto shd' type="button">IMPORT CSV</button>
+                                    <button onClick={handleCSV} className=' bg-purple-600 hover:bg-purple-700 p-2  mr-8 lg:mr-0 text-xl rounded w-auto shd' type="button">IMPORT CSV</button>
                                 </div>
                             </div>
                             <button className=' bg-purple-600 hover:bg-purple-700 p-2  mr-8 lg:mr-0 text-xl rounded w-auto shd' type="submit">ADD EMPLOYEE</button>
