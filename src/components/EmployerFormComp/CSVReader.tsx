@@ -57,11 +57,12 @@ const styles = {
         marginBottom: '0.5em',
     } as CSSProperties,
     progressBar: {
-        bottom: 14,
+        bottom: 2,
+        left:3,
         position: 'absolute',
         width: '100%',
-        paddingLeft: 10,
-        paddingRight: 10,
+        paddingLeft: 0,
+        paddingRight: 0,
     } as CSSProperties,
     zoneHover: {
         borderColor: GREY_DIM,
@@ -72,8 +73,8 @@ const styles = {
     remove: {
         height: 23,
         position: 'absolute',
-        right: 6,
-        top: 6,
+        right: 0,
+        top: 0,
         width: 23,
     } as CSSProperties,
 };
@@ -116,22 +117,20 @@ const CSVReader = () => {
                 Remove,
             }: any) => (
                 <>
-                    <div
+                    <div className=' bg-purple-400 border-4 cursor-pointer  border-purple-700 border-dashed hover:bg-purple-500 p-2  mr-8 lg:mr-0 text-xl rounded w-auto shd relative'
                         {...getRootProps()}
-                        style={Object.assign(
-                            {},
-                            styles.zone,
-                            zoneHover && styles.zoneHover
-                        )}
+                        // style={Object.assign(
+                        //     {},
+                        //     styles.zone,
+                        //     zoneHover && styles.zoneHover
+                        // )}
                     >
                         {acceptedFile ? (
                             <>
-                                <div style={styles.file}>
+                                <div className=' bg-purple-400 cursor-pointer  border-purple-700 p-2 '>
                                     <div style={styles.info}>
-                                        <span style={styles.size}>
-                                            {formatFileSize(acceptedFile.size)}
-                                        </span>
-                                        <span style={styles.name}>{acceptedFile.name}</span>
+                                       
+                                        <span className=' text-xl'>{acceptedFile.name}</span>
                                     </div>
                                     <div style={styles.progressBar}>
                                         <ProgressBar />
