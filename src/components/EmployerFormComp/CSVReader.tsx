@@ -78,7 +78,12 @@ const styles = {
     } as CSSProperties,
 };
 
-export default function CSVReader() {
+type Props = {
+    data: string[];
+}
+
+
+const CSVReader = () => {
     const { CSVReader } = useCSVReader();
     const [zoneHover, setZoneHover] = useState(false);
     const [removeHoverColor, setRemoveHoverColor] = useState(
@@ -90,6 +95,7 @@ export default function CSVReader() {
             onUploadAccepted={(results: any) => {
                 console.log('---------------------------');
                 console.log(results);
+                console.log(typeof (results.data[0]))
                 console.log('---------------------------');
                 setZoneHover(false);
             }}
@@ -155,3 +161,7 @@ export default function CSVReader() {
         </CSVReader>
     );
 }
+
+
+
+export default CSVReader;
