@@ -105,7 +105,7 @@ const CSVReader:FC<Props> = ({setData}) => {
 
                  results.data[0].map((item:string)=>{
                     const header = item.toLowerCase().replace(" ","");
-                    if(header==="discordid" || header==="role" || header==="salary" || header==="walletaddress" ){
+                    if(header==="discordid" || header==="role" || header==="salary" || header==="walletaddress" || header==="coin" ){
                          return true;
                         }
                     else{

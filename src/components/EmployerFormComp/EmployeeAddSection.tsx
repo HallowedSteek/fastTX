@@ -125,8 +125,23 @@ const EmployeeAddSection: FC<Props> = ({ publicKey, setEmployers, setEmployees, 
                             <div className='flex flex-col gap-4'>
                                 <CSVReader setData={setData} />
                                 <div className='flex flex-row justify-between gap-3'>
-                                    <button className=' bg-purple-600 hover:bg-purple-700 p-2  mr-8 lg:mr-0 text-xl rounded w-auto shd' type="button">EXPORT TABLE</button>
-                                    <button onClick={handleCSV} className=' bg-purple-600 hover:bg-purple-700 p-2  mr-8 lg:mr-0 text-xl rounded w-auto shd' type="button">IMPORT CSV</button>
+                                    <button className=' bg-gray-600  p-2  mr-8 lg:mr-0 text-xl rounded w-auto shd ' disabled type="button">EXPORT TABLE</button>
+                                    <button onClick={async ()=>{
+                                        if(publicKey){ 
+                                            data.map(async(item, index:number)=>{
+                                                await addEmployee({
+                                                discordId:item[0],
+                                                role: item[1],
+                                                salary: parseFloat(item[2]),
+                                                solUsdc:item[3].toUpperCase(),
+                                                walletAddress: item[4],
+                                                edit: false
+                                            },publicKey.toString());
+                                            setEmployers(await getEmployers());
+                                            setEmployees(employers[masterPosition].employeeArray);    
+                                        })   
+                                        }
+                                    }} className=' bg-purple-600 hover:bg-purple-700 p-2  mr-8 lg:mr-0 text-xl rounded w-auto shd' type="button">IMPORT CSV</button>
                                 </div>
                             </div>
                             <button className=' bg-purple-600 hover:bg-purple-700 p-2  mr-8 lg:mr-0 text-xl rounded w-auto shd' type="submit">ADD EMPLOYEE</button>
