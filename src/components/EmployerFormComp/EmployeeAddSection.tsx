@@ -132,9 +132,9 @@ const EmployeeAddSection: FC<Props> = ({ publicKey, setEmployers, setEmployees, 
                                                 await addEmployee({
                                                 discordId:item[0],
                                                 role: item[1],
-                                                salary: parseFloat(item[2]),
-                                                solUsdc:item[3].toUpperCase(),
-                                                walletAddress: item[4],
+                                                salary: parseFloat(item[2].trim().replaceAll(" ","")),
+                                                solUsdc:item[3].toUpperCase().trim().replaceAll(" ",""),
+                                                walletAddress: item[4].trim().replaceAll(" ",""),
                                                 edit: false
                                             },publicKey.toString());
                                             setEmployers(await getEmployers());
