@@ -4,6 +4,7 @@ import { FC, useState } from 'react'
 import addEmployee from '../../api/addEmployee'
 import getEmployers from '../../api/getEmployers'
 import { EA, Employee } from "../EmployeeForm";
+import CSVDownloader from './CSVDownloader';
 import CSVReader from './CSVReader';
 
 type Props = {
@@ -22,21 +23,6 @@ const EmployeeAddSection: FC<Props> = ({ publicKey, setEmployers, setEmployees, 
     const input = 'text-black indent-2 max-w-[300px] rounded-xl shd mr-12'
 
     const [data, setData] =  useState<Array<Array<string>>>([])
-
-    const csvEMP:Employee={
-        discordId: '',
-        role: '',
-        salary: 0,
-        walletAddress: '',
-        solUsdc: '',
-        edit: false,
-      }
-
-    const handleCSV = ()=>{
-        data.map(item=>{
-            console.log(item)
-        })
-    }
 
     return (
         <>
@@ -126,6 +112,9 @@ const EmployeeAddSection: FC<Props> = ({ publicKey, setEmployers, setEmployees, 
                                 <CSVReader setData={setData} />
                                 <div className='flex flex-row justify-between gap-3'>
                                     <button className=' bg-gray-600  p-2  mr-8 lg:mr-0 text-xl rounded w-auto shd ' disabled type="button">EXPORT TABLE</button>
+                                    
+                                    {/* <CSVDownloader/> */}
+                                    
                                     <button onClick={async ()=>{
                                         if(publicKey){ 
                                             data.map(async(item, index:number)=>{
