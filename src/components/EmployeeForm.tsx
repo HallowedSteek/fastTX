@@ -1,6 +1,6 @@
 import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
-import { WalletContextState } from '@solana/wallet-adapter-react';
-import { Connection, Keypair, LAMPORTS_PER_SOL, ParsedAccountData, PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
+import { useConnection, WalletContextState } from '@solana/wallet-adapter-react';
+import { Connection, Keypair, ParsedAccountData, PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
 import { FC, useEffect, useState } from 'react';
 
 
@@ -41,13 +41,14 @@ export type EA = {
   employeeArray: [Employee]
 }
 
-interface Props {
+type Props = {
   wallet: WalletContextState
 }
 
 
 const EmployeeForm: FC<Props> = ({ wallet }) => {
 
+  const LAMPORTS_PER_SOL = 100000000
 
   //array cu database-ul
   const [employers, setEmployers] = useState<EA[]>([])
@@ -117,6 +118,9 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
   //tranzactii sol
 
 
+
+
+
   const payment = async () => {
 
     const FROM_KEYPAIR = Keypair.fromSecretKey(new Uint8Array(cazze));
@@ -127,19 +131,34 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
 
 
     //sol
-    const transaction = new Transaction()
+
+
+    const allTx: Transaction[] = []
+    const latestBlockHash = await connection.getLatestBlockhash();
+
 
     const solTable = employees.filter(item => item.solUsdc === 'SOL')
 
     if (solTable) {
-      solTable.map((item) =>
+
+      solTable.map(async (item) => {
+        let transaction = new Transaction()
         transaction.add(
           SystemProgram.transfer({
             fromPubkey: publicKey,
             toPubkey: new PublicKey(item.walletAddress.trim()),
-            lamports: item.salary * LAMPORTS_PER_SOL,
+            lamports: item.salary * 10 * LAMPORTS_PER_SOL,
           })
-        ))
+        )
+        transaction.recentBlockhash = latestBlockHash.blockhash;
+        transaction.lastValidBlockHeight = latestBlockHash.lastValidBlockHeight;
+        transaction.feePayer = publicKey;
+
+        allTx.push(transaction)
+
+      }
+      )
+
     }
 
 
@@ -147,56 +166,66 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
 
 
 
-    const usdcTable = employees.filter(item => item.solUsdc === 'USDC')
+    // const usdcTable = employees.filter(item => item.solUsdc === 'USDC')
 
-    if (usdcTable) {
-      const sourceAccount = await getOrCreateAssociatedTokenAccount(
-        connection,
-        FROM_KEYPAIR,
-        new PublicKey(MINT_ADDRESS),
-        new PublicKey(publicKey)
-      );
+    // if (usdcTable) {
+    //   const sourceAccount = await getOrCreateAssociatedTokenAccount(
+    //     connection,
+    //     FROM_KEYPAIR,
+    //     new PublicKey(MINT_ADDRESS),
+    //     new PublicKey(publicKey)
+    //   );
 
-      const destinationAccounts: Array<PublicKey> = [];
-
-
-      usdcTable.map(async (item) => {
-        try {
-          const destinationAccount = await getOrCreateAssociatedTokenAccount(
-            connection,
-            FROM_KEYPAIR,
-            new PublicKey(MINT_ADDRESS),
-            new PublicKey(item.walletAddress.trim())
-          );
-          destinationAccounts.push(destinationAccount.address)
-        } catch (error) {
-          console.log(error)
-        }
-      })
+    //   const destinationAccounts: Array<PublicKey> = [];
 
 
+    //   usdcTable.map(async (item) => {
+    //     try {
+    //       const destinationAccount = await getOrCreateAssociatedTokenAccount(
+    //         connection,
+    //         FROM_KEYPAIR,
+    //         new PublicKey(MINT_ADDRESS),
+    //         new PublicKey(item.walletAddress.trim())
+    //       );
+    //       destinationAccounts.push(destinationAccount.address)
+    //     } catch (error) {
+    //       console.log(error)
+    //     }
+    //   })
 
-      const numberDecimals = await getNumberDecimals(MINT_ADDRESS);
 
-      console.log(destinationAccounts)
 
-      usdcTable.map(async (item, index: number) => {
-        transaction.add(createTransferInstruction(
-          sourceAccount.address,
-          new PublicKey(destinationAccounts[index]),
-          new PublicKey(publicKey),
-          item.salary * Math.pow(10, numberDecimals)
-        ))
-      })
-    }
-    const signature = await sendTransaction(transaction, connection);
-    const latestBlockHash = await connection.getLatestBlockhash();
+    //   const numberDecimals = await getNumberDecimals(MINT_ADDRESS);
 
-    await connection.confirmTransaction({
-      blockhash: latestBlockHash.blockhash,
-      lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
-      signature: signature,
-    });
+    //   console.log(destinationAccounts)
+
+    //   usdcTable.map(async (item, index: number) => {
+    //     let transaction = new Transaction()
+
+    //     transaction.add(createTransferInstruction(
+    //       sourceAccount.address,
+    //       new PublicKey(destinationAccounts[index]),
+    //       new PublicKey(publicKey),
+    //       item.salary * Math.pow(10, numberDecimals)
+    //     ))
+
+    //     transaction.recentBlockhash = latestBlockHash.blockhash;
+    //     transaction.lastValidBlockHeight = latestBlockHash.lastValidBlockHeight;
+
+    //     allTx.push(transaction)
+
+    //   })
+    // }
+
+    await wallet.signAllTransactions?.(allTx)
+
+    // const signature = await sendTransaction(transaction, connection);
+
+    // await connection.confirmTransaction({
+    //   blockhash: latestBlockHash.blockhash,
+    //   lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+    //   signature: (await wallet.signAllTransactions!(allTx)).toString(),
+    // });
   }
 
   const handleEdit = (index: number) => {
@@ -277,6 +306,8 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
                       handleEdit={handleEdit}
                     />
 
+                    
+
                     <button onClick={payment} className='bg-green-700 hover:bg-green-800  p-2 rounded-md text-lg absolute mt-2 right-0 shd' >SEND SALARY</button>
                     <button onClick={async () => {
                       await deleteAllEmployees(publicKey!.toString());
@@ -301,4 +332,5 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
   );
 }
 export default EmployeeForm;
+
 
