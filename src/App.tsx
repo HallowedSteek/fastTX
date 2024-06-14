@@ -15,7 +15,7 @@ import {
 } from "@solana/wallet-adapter-react-ui";
 
 
-import EmployeeForm from './components/EmployeeForm';
+import EmployeeForm from './components/MainView';
 
 import { Analytics } from '@vercel/analytics/react';
 

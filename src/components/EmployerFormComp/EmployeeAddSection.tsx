@@ -3,7 +3,7 @@ import { Formik, Field } from 'formik'
 import { FC, useState } from 'react'
 import addEmployee from '../../api/addEmployee'
 import getEmployers from '../../api/getEmployers'
-import { EA, Employee } from "../EmployeeForm";
+import { EA, Employee } from '../../Types/MainViewTypes';
 import CSVDownloader from './CSVDownloader';
 import CSVReader from './CSVReader';
 

@@ -2,7 +2,7 @@ import { Keypair, Transaction, SystemProgram, PublicKey, Connection, ParsedAccou
 import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
 import { getOrCreateAssociatedTokenAccount, createTransferInstruction } from '@solana/spl-token';
 import taxWallet from '../utils/bante.json'
-import { Employee } from '../components/EmployeeForm';
+import { Employee } from '../Types/MainViewTypes';
 
 class PaymentProcessor {
   private fromKeypair: Keypair;
