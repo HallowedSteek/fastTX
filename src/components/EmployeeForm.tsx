@@ -1,6 +1,5 @@
-import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
-import { useConnection, WalletContextState } from '@solana/wallet-adapter-react';
-import { Connection, Keypair, ParsedAccountData, PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
+import { WalletContextState } from '@solana/wallet-adapter-react';
+import { Connection, LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { FC, useEffect, useState } from 'react';
 
 
@@ -8,14 +7,12 @@ import getEmployers from '../api/getEmployers';
 
 import "../App.css";
 import SubscriptionTable from './EmployerFormComp/SubscriptionTable';
-import { createTransferInstruction, getOrCreateAssociatedTokenAccount } from '@solana/spl-token';
 
 import EmployeeTable from './EmployerFormComp/EmployeeTable';
 import EmployeeAddSection from './EmployerFormComp/EmployeeAddSection';
-import getWallet from '../api/getWallet';
 
-import cazze from '../utils/bante.json'
 import deleteAllEmployees from '../api/deleteAll';
+import PaymentProcessor from '../utils/PaymentProcessor';
 
 export type Employee = {
   discordId: string,
@@ -48,14 +45,25 @@ type Props = {
 
 const EmployeeForm: FC<Props> = ({ wallet }) => {
 
-  const FROM_KEYPAIR = Keypair.fromSecretKey(new Uint8Array(cazze));
+  
+  //date wallet
+  const { publicKey, sendTransaction } = wallet;
 
-  const LAMPORTS_PER_SOL = 100000000
+  const connection = new Connection(
+    "https://api.devnet.solana.com",
+    'confirmed',
+  );
+
+  const MINT_ADDRESS = 'Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr' //adresa de la usdc
 
   //array cu database-ul
   const [employers, setEmployers] = useState<EA[]>([])
-
   const [employees, setEmployees] = useState<Employee[]>([])
+  
+  //subscriptie
+  const [weekly, setWeekly] = useState(false);
+
+  const masterPosition = employers.findIndex(item => item.masterWallet === wallet.publicKey?.toBase58())
 
   useEffect(() => {
 
@@ -67,8 +75,6 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
     
   }, [])
 
-  const masterPosition = employers.findIndex(item => item.masterWallet === wallet.publicKey?.toBase58())
-
   useEffect(() => {
 
       try {
@@ -79,113 +85,16 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
 
     }, [employers, masterPosition])
 
-  //subscriptie
-  const [weekly, setWeekly] = useState(false);
-
-  //date wallet
-  const { publicKey, sendTransaction } = wallet;
-  // const { connection } = useConnection();
-
-  const connection = new Connection(
-    "https://api.devnet.solana.com",
-    'confirmed',
-  );
-
-  // usdc stuff
-  const MINT_ADDRESS = 'Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr' //adresa de la usdc
-
-  // decimale pentru spl tokens
-  async function getNumberDecimals(mintAddress: string): Promise<number> {
-    const info = await connection.getParsedAccountInfo(new PublicKey(mintAddress));
-    const result = (info.value?.data as ParsedAccountData).parsed.info.decimals as number;
-    return result;
-  }
 
   //plata
   const payment = async () => {
 
-    
+    if(publicKey == null)
+      return;
 
-    console.log(FROM_KEYPAIR)
+    const paymentProcessor = new PaymentProcessor(publicKey, connection, employees, LAMPORTS_PER_SOL, MINT_ADDRESS, sendTransaction);
+    await paymentProcessor.processPayment();
 
-    if (!publicKey) throw new WalletNotConnectedError();
-
-    //sol table processing
-
-    const solTable = employees.filter(item => item.solUsdc === 'SOL')
-    
-    let transaction = new Transaction()
-
-    if (solTable) {
-      solTable.map(async (item) => 
-        {
-          transaction.add(
-            SystemProgram.transfer({
-              fromPubkey: publicKey,
-              toPubkey: new PublicKey(item.walletAddress.trim()),
-              lamports: item.salary * 10 * LAMPORTS_PER_SOL,
-            })
-          )
-        }
-      )
-    }
-
-    //usdc table processing
-
-    const usdcTable = employees.filter(item => item.solUsdc === 'USDC')
-   
-    if (usdcTable) {
-
-      const sourceAccount = await getOrCreateAssociatedTokenAccount(
-        connection,
-        FROM_KEYPAIR,
-        new PublicKey(MINT_ADDRESS),
-        new PublicKey(publicKey)
-      );
-
-      console.log("source acc:")
-      console.log(sourceAccount)
-
-      const destinationAccounts: Array<PublicKey> = [];
-
-      usdcTable.map(async (item) => {
-        try {
-          const destinationAccount = await getOrCreateAssociatedTokenAccount(
-            connection,
-            FROM_KEYPAIR,
-            new PublicKey(MINT_ADDRESS),
-            new PublicKey(item.walletAddress.trim())
-          );
-          destinationAccounts.push(destinationAccount.address)
-
-          console.log("destinationAccount:")
-          console.log(destinationAccount)
-
-        } catch (error) {
-          console.log(error)
-        }
-      })
-
-      const numberDecimals = await getNumberDecimals(MINT_ADDRESS);
-
-      usdcTable.map(async (item, index: number) => 
-      {
-        transaction.add(createTransferInstruction(
-          sourceAccount.address,
-          new PublicKey(destinationAccounts[index]),
-          new PublicKey(publicKey),
-          item.salary * Math.pow(10, numberDecimals)
-        ))
-      })
-    }
-
-    const latestBlockHash = await connection.getLatestBlockhash();
-    
-    transaction.recentBlockhash = latestBlockHash.blockhash;
-    transaction.lastValidBlockHeight = latestBlockHash.lastValidBlockHeight;
-    transaction.feePayer = publicKey;
-    
-    await sendTransaction(transaction, connection);
   }
 
   const handleEdit = (index: number) => {
@@ -237,7 +146,6 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
                           setEmployers(await getEmployers());
                           setEmployees(employers[masterPosition].employeeArray);
                         }} className='bg-red-700 hover:bg-red-800  p-2 rounded-md text-lg absolute mt-2 left-0 shd' >DELETE ALL</button>
-
 
                       </>
                       : null
