@@ -87,14 +87,12 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
 
   const [weekly, setWeekly] = useState(false);
 
-
-
   //date wallet
   const { publicKey, sendTransaction } = wallet;
   // const { connection } = useConnection();
 
   const connection = new Connection(
-    "https://few-solemn-county.solana-mainnet.discover.quiknode.pro/f8fa35bce484452cebe7789519c50638382bb03a/",
+    "https://api.devnet.solana.com",
     'confirmed',
   );
 
@@ -102,7 +100,7 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
 
   //tranzactii usdc
 
-  const MINT_ADDRESS = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v' //adresa de la usdc
+  const MINT_ADDRESS = 'Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr' //adresa de la usdc
 
 
   const [tokenWall, setTokenWall] = useState('')
@@ -125,24 +123,21 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
 
     const FROM_KEYPAIR = Keypair.fromSecretKey(new Uint8Array(cazze));
 
+    console.log(FROM_KEYPAIR)
 
     if (!publicKey) throw new WalletNotConnectedError();
 
-
-
     //sol
 
-
     const allTx: Transaction[] = []
-    const latestBlockHash = await connection.getLatestBlockhash();
-
 
     const solTable = employees.filter(item => item.solUsdc === 'SOL')
+    
+    let transaction = new Transaction()
 
     if (solTable) {
 
       solTable.map(async (item) => {
-        let transaction = new Transaction()
         transaction.add(
           SystemProgram.transfer({
             fromPubkey: publicKey,
@@ -150,76 +145,69 @@ const EmployeeForm: FC<Props> = ({ wallet }) => {
             lamports: item.salary * 10 * LAMPORTS_PER_SOL,
           })
         )
-        transaction.recentBlockhash = latestBlockHash.blockhash;
-        transaction.lastValidBlockHeight = latestBlockHash.lastValidBlockHeight;
-        transaction.feePayer = publicKey;
 
-        allTx.push(transaction)
-
-      }
+        // allTx.push(transaction)
+        }
       )
-
     }
-
 
     //usdc
 
+    const usdcTable = employees.filter(item => item.solUsdc === 'USDC')
+   
+    if (usdcTable) 
+    {
+      const sourceAccount = await getOrCreateAssociatedTokenAccount(
+        connection,
+        FROM_KEYPAIR,
+        new PublicKey(MINT_ADDRESS),
+        new PublicKey(publicKey)
+      );
 
+      const destinationAccounts: Array<PublicKey> = [];
 
-    // const usdcTable = employees.filter(item => item.solUsdc === 'USDC')
+      usdcTable.map(async (item) => {
+        try {
+          const destinationAccount = await getOrCreateAssociatedTokenAccount(
+            connection,
+            FROM_KEYPAIR,
+            new PublicKey(MINT_ADDRESS),
+            new PublicKey(item.walletAddress.trim())
+          );
+          destinationAccounts.push(destinationAccount.address)
+        } catch (error) {
+          console.log(error)
+        }
+      })
 
-    // if (usdcTable) {
-    //   const sourceAccount = await getOrCreateAssociatedTokenAccount(
-    //     connection,
-    //     FROM_KEYPAIR,
-    //     new PublicKey(MINT_ADDRESS),
-    //     new PublicKey(publicKey)
-    //   );
+      const numberDecimals = await getNumberDecimals(MINT_ADDRESS);
 
-    //   const destinationAccounts: Array<PublicKey> = [];
+      console.log(destinationAccounts)
 
+      usdcTable.map(async (item, index: number) => 
+      {
+        transaction.add(createTransferInstruction(
+          sourceAccount.address,
+          new PublicKey(destinationAccounts[index]),
+          new PublicKey(publicKey),
+          item.salary * Math.pow(10, numberDecimals)
+        ))
 
-    //   usdcTable.map(async (item) => {
-    //     try {
-    //       const destinationAccount = await getOrCreateAssociatedTokenAccount(
-    //         connection,
-    //         FROM_KEYPAIR,
-    //         new PublicKey(MINT_ADDRESS),
-    //         new PublicKey(item.walletAddress.trim())
-    //       );
-    //       destinationAccounts.push(destinationAccount.address)
-    //     } catch (error) {
-    //       console.log(error)
-    //     }
-    //   })
+        // allTx.push(transaction)
 
+      })
+    }
 
+    //to insert
+    // await wallet.signAllTransactions?.(allTx)
 
-    //   const numberDecimals = await getNumberDecimals(MINT_ADDRESS);
-
-    //   console.log(destinationAccounts)
-
-    //   usdcTable.map(async (item, index: number) => {
-    //     let transaction = new Transaction()
-
-    //     transaction.add(createTransferInstruction(
-    //       sourceAccount.address,
-    //       new PublicKey(destinationAccounts[index]),
-    //       new PublicKey(publicKey),
-    //       item.salary * Math.pow(10, numberDecimals)
-    //     ))
-
-    //     transaction.recentBlockhash = latestBlockHash.blockhash;
-    //     transaction.lastValidBlockHeight = latestBlockHash.lastValidBlockHeight;
-
-    //     allTx.push(transaction)
-
-    //   })
-    // }
-
-    await wallet.signAllTransactions?.(allTx)
-
-    // const signature = await sendTransaction(transaction, connection);
+    const latestBlockHash = await connection.getLatestBlockhash();
+    
+    transaction.recentBlockhash = latestBlockHash.blockhash;
+    transaction.lastValidBlockHeight = latestBlockHash.lastValidBlockHeight;
+    transaction.feePayer = publicKey;
+    
+    await sendTransaction(transaction, connection);
 
     // await connection.confirmTransaction({
     //   blockhash: latestBlockHash.blockhash,
