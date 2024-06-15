@@ -110,22 +110,25 @@ const MainView: FC<MainViewTypes> = ({ wallet }) => {
                         handleEdit={handleEdit}
                       />
 
-                      <button
-                        onClick={payment}
-                        className="bg-green-700 hover:bg-green-800  p-2 rounded-md text-lg absolute mt-2 right-0 shd"
-                      >
-                        SEND SALARY
-                      </button>
-                      <button
-                        onClick={async () => {
-                          await deleteAllEmployees(publicKey!.toString());
-                          setEmployers(await getEmployers());
-                          setEmployees(employers[masterPosition].employeeArray);
-                        }}
-                        className="bg-red-700 hover:bg-red-800  p-2 rounded-md text-lg absolute mt-2 left-0 shd"
-                      >
-                        DELETE ALL
-                      </button>
+                      <div className="pb-20 pt-4">
+                        <button
+                          onClick={payment}
+                          className="bg-green-700 hover:bg-green-800  p-2 rounded-md text-lg absolute mt-2 right-0 shd"
+                        >
+                          SEND SALARY
+                        </button>
+                        <button
+                          onClick={async () => {
+                            await deleteAllEmployees(publicKey!.toString());
+                            setEmployers(await getEmployers());
+                            setEmployees(employers[masterPosition].employeeArray);
+                          }}
+                          className="bg-red-700 hover:bg-red-800  p-2 rounded-md text-lg absolute mt-2 left-0 shd"
+                        >
+                          DELETE ALL
+                        </button>
+                      </div>
+
                     </>
                   ) : null}
                 </>
@@ -172,12 +175,14 @@ const MainView: FC<MainViewTypes> = ({ wallet }) => {
         </div>
       ) : (
         <>
-          <h1>
-            Your wallet is not registered! <br />
-            If you are registered, please contact BigBoiSOL【Ø】#0587 on discord
-            for further asistance!{" "}
-          </h1>{" "}
-          <br /> 💀💀💀
+          <div className=" w-screen h-screen flex justify-center items-center">
+            <h1>
+              Your wallet is not registered! 
+              <br />
+              If you are registered, please contact BigBoiSOL【Ø】#0587 on discord
+              for further asistance!
+            </h1>
+          </div>
         </>
       )}
     </>

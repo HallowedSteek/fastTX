@@ -26,12 +26,11 @@ const Content = () => {
 
     return (
         <header className="App-header">
-
-            <div className='w-screen h-screen  flex flex-col justify-center  backdrop-blur-[80px]'>
+            <div className='w-screen relative  flex flex-col justify-center  backdrop-blur-[80px]'>
                 <div className='absolute top-0 right-0 m-4'>
                     <WalletMultiButton />
                 </div>
-                {wallet?.publicKey ? <EmployeeForm wallet={wallet} /> : "Please connect your wallet!"}
+            {wallet?.publicKey ? <EmployeeForm wallet={wallet} /> : "Please connect your wallet!"}
             </div>
         </header>
     )
