@@ -177,9 +177,8 @@ const EmployeeTable: FC<ImportEmployees> = ({
                           </Field>
                         </div>
                       ) : (
-                        // eslint-disable-next-line eqeqeq
                         `${item.salary} ${
-                          item.solUsdc == "SOL" ? "SOL" : "USDC"
+                          item.solUsdc === "SOL" ? "SOL" : "USDC"
                         }`
                       )}
                     </td>

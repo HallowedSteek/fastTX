@@ -1,6 +1,11 @@
+import { FC } from 'react';
 import { useCSVDownloader } from 'react-papaparse';
 
-const CSVDownloader = () => {
+type Props = {
+    data: Array<Array<string>>
+  }
+
+const CSVDownloader: FC<Props> = ({data}) => {
     const { CSVDownloader, Type } = useCSVDownloader();
 
     return (
@@ -11,34 +16,9 @@ const CSVDownloader = () => {
             config={{
                 delimiter: ';',
             }}
-            data={[
-                {
-                    'Column 1': '1-1',
-                    'Column 2': '1-2',
-                    'Column 3': '1-3',
-                    'Column 4': '1-4',
-                },
-                {
-                    'Column 1': '2-1',
-                    'Column 2': '2-2',
-                    'Column 3': '2-3',
-                    'Column 4': '2-4',
-                },
-                {
-                    'Column 1': '3-1',
-                    'Column 2': '3-2',
-                    'Column 3': '3-3',
-                    'Column 4': '3-4',
-                },
-                {
-                    'Column 1': 4,
-                    'Column 2': 5,
-                    'Column 3': 6,
-                    'Column 4': 7,
-                },
-            ]}
+            data={data}
         >
-            Download
+          <h1 className="bg-purple-600 hover:bg-purple-700 p-2  mr-8 lg:mr-0 text-xl rounded w-auto shd">EXPORT CSV</h1>
         </CSVDownloader>
     );
 }

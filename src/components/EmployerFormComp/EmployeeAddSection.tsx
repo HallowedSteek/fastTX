@@ -116,15 +116,8 @@ const EmployeeAddSection: FC<Props> = ({
                 <CSVReader setData={setData} />
 
                 <div className="flex flex-row justify-between gap-3">
-                  <button
-                    className=" bg-gray-600  p-2  mr-8 lg:mr-0 text-xl rounded w-auto shd "
-                    disabled
-                    type="button"
-                  >
-                    EXPORT TABLE
-                  </button>
 
-                  {/* <CSVDownloader/> */}
+                  <CSVDownloader data = {data}/>
 
                   <button
                     onClick={async () => {
@@ -159,7 +152,7 @@ const EmployeeAddSection: FC<Props> = ({
 
                 </div>
               </div>
-              
+
               <button
                 className=" bg-purple-600 hover:bg-purple-700 p-2  mr-8 lg:mr-0 text-xl rounded w-auto shd"
                 type="submit"

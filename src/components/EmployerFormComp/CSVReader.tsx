@@ -1,8 +1,7 @@
 import { useState, CSSProperties, FC } from 'react';
 import {
     useCSVReader,
-    lightenDarkenColor,
-    formatFileSize,
+    lightenDarkenColor
 } from 'react-papaparse';
 
 const GREY = '#CCC';
@@ -86,7 +85,6 @@ type Props = {
 
 const CSVReader:FC<Props> = ({setData}) => {
     const { CSVReader } = useCSVReader();
-    const [zoneHover, setZoneHover] = useState(false);
     const [removeHoverColor, setRemoveHoverColor] = useState(
         DEFAULT_REMOVE_HOVER_COLOR
     );
@@ -95,12 +93,7 @@ const CSVReader:FC<Props> = ({setData}) => {
     return (
         <CSVReader
             onUploadAccepted={(results: any) => {
-                // console.log('---------------------------');
-                // console.log(results);
-                // console.log(results.data[1][0])
-                // console.log(typeof (results.data[0][0]))
-                // console.log('---------------------------');
-                
+     
                 let check = true;
 
                  results.data[0].map((item:string)=>{
@@ -127,15 +120,6 @@ const CSVReader:FC<Props> = ({setData}) => {
                     })
                 }
                 
-                setZoneHover(false);
-            }}
-            onDragOver={(event: DragEvent) => {
-                event.preventDefault();
-                setZoneHover(true);
-            }}
-            onDragLeave={(event: DragEvent) => {
-                event.preventDefault();
-                setZoneHover(false);
             }}
         >
             {({
@@ -148,11 +132,6 @@ const CSVReader:FC<Props> = ({setData}) => {
                 <>
                     <div className=' bg-purple-400 border-4 cursor-pointer  border-purple-700 border-dashed hover:bg-purple-500 p-2  mr-8 lg:mr-0 text-xl rounded w-auto shd relative'
                         {...getRootProps()}
-                        // style={Object.assign(
-                        //     {},
-                        //     styles.zone,
-                        //     zoneHover && styles.zoneHover
-                        // )}
                     >
                         {acceptedFile ? (
                             <>
