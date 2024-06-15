@@ -115,7 +115,7 @@ const EmployeeAddSection: FC<Props> = ({
 
                 <CSVReader setData={setData} />
 
-                <div className="flex flex-row justify-between ">
+                <div className="flex flex-row justify-between gap-3 ">
 
                   <CSVDownloader data = {data}/>
 
