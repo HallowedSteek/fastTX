@@ -111,7 +111,7 @@ const CSVReader:FC<Props> = ({setData}) => {
 
                 if(check){
                     setData([]);
-                    results.data.map((item:any, index:number)=>{
+                    results.data.map(async (item:any, index:number)=>{
                         if(index>0)
                         { 
                             console.log(item);
