@@ -130,7 +130,7 @@ const CSVReader:FC<Props> = ({setData}) => {
                 Remove,
             }: any) => (
                 <>
-                    <div className=' bg-purple-400 border-4 cursor-pointer  border-purple-700 border-dashed hover:bg-purple-500 p-2  mr-8 lg:mr-0 text-xl rounded w-auto shd relative'
+                    <div className=' bg-purple-400 border-4 cursor-pointer  border-purple-700 border-dashed hover:bg-purple-500 p-2  mr-8 lg:mr-0 text-xl rounded max-w-xs shd relative'
                         {...getRootProps()}
                     >
                         {acceptedFile ? (
