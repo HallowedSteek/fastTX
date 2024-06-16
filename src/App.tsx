@@ -30,7 +30,10 @@ const Content = () => {
                 <div className='absolute top-0 right-0 m-4'>
                     <WalletMultiButton />
                 </div>
-            {wallet?.publicKey ? <EmployeeForm wallet={wallet} /> : "Please connect your wallet!"}
+            {wallet?.publicKey ? <EmployeeForm wallet={wallet} /> 
+            : 
+                <h1 className='absolute mt-[50%] mx-[50%]'>Please connect your wallet!</h1>
+            }
             </div>
         </header>
     )
@@ -51,7 +54,7 @@ function App() {
     );
 
     return (
-        <div className="App">
+        <div className="App w-screen h-screen">
             <ConnectionProvider endpoint={endpoint}>
                 <WalletProvider wallets={wallets} autoConnect>
                     <WalletModalProvider>
