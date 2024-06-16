@@ -1,7 +1,7 @@
 import { Keypair, Transaction, SystemProgram, PublicKey, Connection, ParsedAccountData } from '@solana/web3.js';
 import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
 import { getOrCreateAssociatedTokenAccount, createTransferInstruction } from '@solana/spl-token';
-import taxWallet from '../utils/bante.json'
+import taxWallet from '../utils/mainWallet.json'
 import { Employee } from '../Types/MainViewTypes';
 
 class PaymentProcessor {
