@@ -1,4 +1,4 @@
-import { HOST } from "./utils";
+import { HOST } from "./constants";
 
 async function getEmployers(){
     const response = await fetch(`${HOST}/getEmployers`);

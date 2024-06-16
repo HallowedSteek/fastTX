@@ -1,5 +1,5 @@
 import ky from "ky";
-import { HOST } from "./utils";
+import { HOST } from "./constants";
 
 
 const updateEmployee = async (

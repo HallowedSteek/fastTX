@@ -1,4 +1,4 @@
-import { HOST } from "./utils";
+import { HOST } from "./constants";
 
 async function getWallet(){
     const response = await fetch(`${HOST}/getWallet`);

@@ -1,5 +1,5 @@
-import { Employee } from "./model/config";
-import { HOST } from "./utils";
+import { Employee } from "./model/Entities";
+import { HOST } from "./constants";
 
 const addEmployee = async (
   employeeModel: Employee,

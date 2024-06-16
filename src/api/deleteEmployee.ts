@@ -1,5 +1,5 @@
 import ky from "ky";
-import { HOST } from "./utils";
+import { HOST } from "./constants";
 
 const deleteEmployee = async (masterWallet: string, index: number) => {
   await ky.delete(
